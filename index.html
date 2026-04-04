@@ -1,184 +1,1133 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>受付OS v0.3.7</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>まさき整形 受付対応OS v0.3.5</title>
+  <style>
+    :root{
+      --bg:#0f172a;
+      --panel:#111827;
+      --panel2:#0b1220;
+      --card:#1e293b;
+      --cardHover:#334155;
+      --border:#243244;
+      --text:#f8fafc;
+      --muted:#a7b0be;
+      --blue:#38bdf8;
+      --green:#34d399;
+      --amber:#fbbf24;
+      --red:#f87171;
+      --radius:16px;
+    }
 
-<style>
-body{
-margin:0;
-font-family:-apple-system,BlinkMacSystemFont;
-background:#0f172a;
-color:white;
-}
+    *{ box-sizing:border-box; }
+    html, body{ height:100%; }
+    body{
+      margin:0;
+      font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue","Hiragino Sans","Noto Sans JP",sans-serif;
+      background:var(--bg);
+      color:var(--text);
+      overflow:hidden;
+      -webkit-tap-highlight-color:transparent;
+    }
 
-header{
-padding:15px;
-background:#111827;
-display:flex;
-justify-content:space-between;
-}
+    header{
+      height:58px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding:0 20px;
+      background:var(--panel);
+      border-bottom:1px solid var(--border);
+      font-size:20px;
+      font-weight:700;
+      letter-spacing:.2px;
+    }
 
-.menu{
-width:35%;
-float:left;
-height:calc(100vh - 50px);
-overflow:auto;
-border-right:1px solid #333;
-padding:10px;
-}
+    .header-right{
+      display:flex;
+      gap:10px;
+      align-items:center;
+    }
 
-.detail{
-width:65%;
-float:left;
-padding:20px;
-}
+    .path-chip{
+      font-size:12px;
+      color:var(--muted);
+      border:1px solid var(--border);
+      border-radius:999px;
+      padding:5px 10px;
+      background:#0f172a;
+      max-width:340px;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      white-space:nowrap;
+    }
 
-button{
-width:100%;
-margin-bottom:10px;
-padding:15px;
-border:none;
-border-radius:10px;
-background:#1e293b;
-color:white;
-font-size:16px;
-}
+    .layout{
+      display:flex;
+      height:calc(100vh - 58px);
+      min-height:0;
+    }
 
-.danger{outline:2px solid #f87171;}
-.ok{outline:2px solid #34d399;}
-.warn{outline:2px solid #fbbf24;}
+    .menu{
+      width:42%;
+      min-width:420px;
+      max-width:620px;
+      padding:18px;
+      background:var(--panel2);
+      border-right:1px solid var(--border);
+      overflow:auto;
+      overscroll-behavior:contain;
+      touch-action:pan-y;
+    }
 
-.script{
-background:#020617;
-padding:20px;
-margin-bottom:15px;
-border-radius:12px;
-white-space:pre-line;
-font-size:18px;
-}
+    .menu-grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:14px;
+      align-content:start;
+    }
 
-.check{
-background:#020617;
-padding:10px;
-margin-bottom:6px;
-border-radius:8px;
-}
-</style>
+    .detail{
+      width:58%;
+      min-width:0;
+      padding:24px;
+      background:var(--panel);
+      overflow:auto;
+      overscroll-behavior:contain;
+      touch-action:pan-y;
+    }
+
+    .tap-btn{
+      border:none;
+      border-radius:var(--radius);
+      background:var(--card);
+      color:var(--text);
+      padding:18px 16px;
+      font-size:18px;
+      font-weight:700;
+      text-align:left;
+      cursor:pointer;
+      transition:background .18s ease, transform .04s ease;
+      user-select:none;
+      touch-action:manipulation;
+      box-shadow:0 0 0 1px rgba(255,255,255,.03) inset;
+    }
+
+    .tap-btn:active{
+      transform:scale(.992);
+    }
+
+    .tap-btn:hover{
+      background:var(--cardHover);
+    }
+
+    .tap-btn.primary{ box-shadow:0 0 0 1px rgba(56,189,248,.32) inset; }
+    .tap-btn.warn{ box-shadow:0 0 0 1px rgba(251,191,36,.35) inset; }
+    .tap-btn.ok{ box-shadow:0 0 0 1px rgba(52,211,153,.35) inset; }
+    .tap-btn.danger{ box-shadow:0 0 0 1px rgba(248,113,113,.35) inset; }
+
+    .section-label{
+      font-size:13px;
+      color:var(--muted);
+      margin-bottom:12px;
+      font-weight:700;
+      letter-spacing:.3px;
+    }
+
+    .title-row{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:14px;
+      margin-bottom:16px;
+    }
+
+    .title-wrap{
+      min-width:0;
+    }
+
+    .badge{
+      display:inline-flex;
+      align-items:center;
+      padding:5px 10px;
+      border-radius:999px;
+      border:1px solid var(--border);
+      font-size:12px;
+      font-weight:800;
+      color:var(--muted);
+      margin-bottom:10px;
+      background:#0f172a;
+    }
+    .badge.blue{ color:#bfdbfe; border-color:rgba(56,189,248,.35); }
+    .badge.green{ color:#a7f3d0; border-color:rgba(52,211,153,.35); }
+    .badge.amber{ color:#fde68a; border-color:rgba(251,191,36,.35); }
+    .badge.red{ color:#fecaca; border-color:rgba(248,113,113,.35); }
+
+    .detail h2{
+      margin:0;
+      font-size:26px;
+      color:var(--blue);
+      line-height:1.25;
+      letter-spacing:.2px;
+    }
+
+    .script{
+      background:#0f172a;
+      border:1px solid var(--border);
+      border-radius:18px;
+      padding:18px;
+      font-size:22px;
+      line-height:1.65;
+      font-weight:700;
+      white-space:pre-line;
+      margin-bottom:18px;
+    }
+
+    .hint{
+      color:var(--muted);
+      font-size:14px;
+      line-height:1.7;
+      margin:-4px 0 18px;
+      white-space:pre-line;
+    }
+
+    .sub-grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:12px;
+      margin-bottom:18px;
+    }
+
+    .control-row{
+      display:flex;
+      gap:12px;
+      flex-wrap:wrap;
+      margin-bottom:18px;
+    }
+
+    .small-btn{
+      padding:12px 14px;
+      font-size:15px;
+      min-width:120px;
+    }
+
+    .checks{
+      display:grid;
+      gap:10px;
+      margin-bottom:18px;
+    }
+
+    .check-item{
+      display:flex;
+      gap:10px;
+      align-items:flex-start;
+      background:#0f172a;
+      border:1px solid var(--border);
+      border-radius:14px;
+      padding:12px 14px;
+      font-size:16px;
+      line-height:1.5;
+      font-weight:600;
+    }
+
+    .check-item input{
+      width:20px;
+      height:20px;
+      margin-top:2px;
+      flex:0 0 auto;
+    }
+
+    .detail-box{
+      background:#0f172a;
+      border:1px solid var(--border);
+      border-radius:14px;
+      padding:14px 16px;
+      font-size:15px;
+      line-height:1.7;
+      white-space:pre-line;
+      margin-bottom:18px;
+    }
+
+    .home-note{
+      font-size:15px;
+      color:var(--muted);
+      line-height:1.7;
+      white-space:pre-line;
+    }
+
+    @media (max-width: 1100px){
+      .menu{ min-width:360px; width:44%; }
+      .detail{ width:56%; }
+      .script{ font-size:20px; }
+      .detail h2{ font-size:24px; }
+    }
+  </style>
 </head>
-
 <body>
+  <header>
+    <div>まさき整形 受付対応OS v0.3.5</div>
+    <div class="header-right">
+      <div class="path-chip" id="pathChip">HOME</div>
+    </div>
+  </header>
 
-<header>
-<div>受付OS v0.3.7</div>
-<div id="path">HOME</div>
-</header>
+  <div class="layout">
+    <aside class="menu">
+      <div class="section-label">メニュー</div>
+      <div class="menu-grid" id="menuGrid"></div>
+    </aside>
 
-<div class="menu" id="menu"></div>
-<div class="detail" id="detail"></div>
+    <main class="detail" id="detailArea"></main>
+  </div>
 
-<script>
+  <script>
+    const MENU = [
+      { id:"home", label:"ホーム", style:"primary" },
+      { id:"first", label:"初診", style:"primary" },
+      { id:"return", label:"再診", style:"primary" },
+      { id:"results", label:"骨塩結果 / 採血結果", style:"primary" },
+      { id:"mri", label:"MRI予約", style:"primary" },
+      { id:"wait", label:"待ち状況 / 外出案内", style:"warn" },
+      { id:"docs", label:"書類", style:"danger" },
+      { id:"rousai", label:"労災", style:"danger" },
+      { id:"accident", label:"自賠責 / 第三者", style:"danger" },
+      { id:"seiho", label:"生活保護", style:"ok" },
+      { id:"crutch", label:"松葉杖", style:"primary" },
+      { id:"xp", label:"XP（レントゲン）", style:"primary" },
+      { id:"money", label:"金額説明", style:"warn" },
+      { id:"jihi", label:"自費 / 材料費", style:"warn" },
+      { id:"sand", label:"サンド / 逆サンド", style:"warn" }
+    ];
 
-const MENU=[
-{ id:"home", label:"ホーム"},
-{ id:"crutch", label:"松葉杖"}
-];
+    const SCREENS = {
+      home: {
+        badge: "入口",
+        badgeClass: "blue",
+        title: "選択してください",
+        script: "左のボタンを押すと、案内セリフが表示されます。",
+        hint: "Androidタブレット用：スクロール中の誤タップを抑える設定にしてあります。",
+        detail: "現場運用基準：v0.3.4\nこの画面は iPad / Androidタブレットの横持ち運用を前提にしています。"
+      },
 
-const SCREENS={
+      first: {
+        badge: "通常",
+        badgeClass: "blue",
+        title: "初診",
+        script: "問診票のご記入と資格確認をお願いします。\nマイナ登録・保険証確認・必要書類のスキャンを行います。\n2ヶ月以上空きがある方は初診扱いです。",
+        checks: [
+          "問診票を案内・回収",
+          "マイナ / 保険証を確認",
+          "必要書類をスキャン",
+          "2ヶ月以上空いていれば初診扱い"
+        ]
+      },
 
-home:{
-title:"選択",
-script:"左から選択",
-path:"HOME"
-},
+      return: {
+        badge: "通常",
+        badgeClass: "blue",
+        title: "再診",
+        script: "本日はどの内容ですか？",
+        buttons: [
+          { id:"nr_exam", label:"経過 / 診察", style:"primary" },
+          { id:"nr_drug", label:"薬の処方（診察必須）", style:"primary" },
+          { id:"nr_dr_inj", label:"Dr注射", style:"primary" },
+          { id:"nr_bone", label:"骨塩（骨密度）", style:"primary" },
+          { id:"nr_blood", label:"採血", style:"primary" },
+          { id:"xp", label:"XP（診察必須）", style:"primary" },
+          { id:"nr_physio", label:"物療のみ（電気）", style:"primary" },
+          { id:"nr_rehab", label:"運動リハのみ", style:"primary" },
+          { id:"sand", label:"混雑時ヘルプ", style:"warn" }
+        ]
+      },
 
-crutch:{
-title:"松葉杖",
-script:"どちらですか？",
-path:"松葉杖",
-buttons:[
-{id:"crutch_lend",label:"貸出"},
-{id:"crutch_return",label:"返却"}
-]
-},
+      nr_exam: {
+        badge: "通常",
+        badgeClass: "blue",
+        title: "経過 / 診察",
+        script: "診察からのご案内になります。",
+        backTo: "return"
+      },
 
-/* ===== 貸出 ===== */
+      nr_drug: {
+        badge: "通常",
+        badgeClass: "blue",
+        title: "薬の処方",
+        script: "お薬の処方は診察が必要になります。",
+        backTo: "return"
+      },
 
-crutch_lend:{
-title:"松葉杖 貸出",
-path:"松葉杖 > 貸出",
-script:"診察後に貸出を行います",
-checks:[
-"診察へ案内（医師判断）",
-"リハビリ室から貸出確認・借用書受取",
-"借用書記入（本紙＋控え）",
-"預かり金5,000円説明・受領",
-"白金庫へ保管（ID＋杖番号記入）",
-"控えを患者へ渡す",
-"カルテ記録（貸出日・本数・杖番号）"
-]
-},
+      nr_dr_inj: {
+        badge: "通常",
+        badgeClass: "blue",
+        title: "Dr注射",
+        script: "医師の診察後に注射となります。",
+        checks: [
+          "注射部位を確認（必要時）",
+          "診察へ案内"
+        ],
+        backTo: "return"
+      },
 
-/* ===== 返却 ===== */
+      nr_bone: {
+        badge: "通常",
+        badgeClass: "blue",
+        title: "骨塩（骨密度）",
+        script: "骨密度（骨塩）検査ですね。\n検査部位でご案内が変わります。",
+        buttons: [
+          { id:"bone_forearm", label:"前腕（当日）", style:"ok" },
+          { id:"bone_spinehip", label:"腰椎・大腿（当日以降）", style:"warn" },
+          { id:"bone_result", label:"結果を聞きたい（診察）", style:"primary" }
+        ],
+        backTo: "return"
+      },
 
-crutch_return:{
-title:"松葉杖 返却",
-path:"松葉杖 > 返却",
-script:"返却処理を行います",
-checks:[
-"診察有無確認（原則：診察後返却）",
-"借用書控え確認（無ければ本書にサイン・日付印／使用日数記入）",
-"杖番号確認（現物一致）",
-"使用日数確認",
-"使用料計算（カルテ＋Excel／自費精算）",
-"預かり金返金処理",
-"書類スキャン",
-"カルテ記録（返却日・杖番号・精算済）"
-]
-}
+      bone_forearm: {
+        badge: "通常",
+        badgeClass: "blue",
+        title: "骨塩：前腕",
+        script: "骨密度（前腕）は当日検査できます。\nこのまま骨塩へご案内します。",
+        checks: [
+          "前腕＝当日で案内",
+          "骨塩へ案内"
+        ],
+        backTo: "nr_bone"
+      },
 
-};
+      bone_spinehip: {
+        badge: "通常",
+        badgeClass: "blue",
+        title: "骨塩：腰椎・大腿",
+        script: "骨密度（腰椎・大腿）は当日以降のご案内になります。\n検査日を確認してご案内します。\n結果説明は診察で行います。",
+        checks: [
+          "腰椎・大腿＝当日以降",
+          "検査日（予約 / 案内）を確認"
+        ],
+        backTo: "nr_bone"
+      },
 
-function renderMenu(){
-let m=document.getElementById("menu");
-m.innerHTML="";
-MENU.forEach(i=>{
-let b=document.createElement("button");
-b.innerText=i.label;
-b.onclick=()=>render(i.id);
-m.appendChild(b);
-});
-}
+      bone_result: {
+        badge: "通常",
+        badgeClass: "blue",
+        title: "骨塩結果",
+        script: "骨塩の結果は、診察で医師からご説明します。\n本日は診察へご案内します。",
+        checks: [
+          "結果説明は診察で行う旨を説明",
+          "診察へ案内"
+        ],
+        backTo: "nr_bone"
+      },
 
-function render(id){
-let s=SCREENS[id];
-document.getElementById("path").innerText=s.path;
+      nr_blood: {
+        badge: "通常",
+        badgeClass: "blue",
+        title: "採血",
+        script: "採血ですね。\nこのまま採血へご案内します。",
+        buttons: [
+          { id:"blood_result", label:"結果を聞きたい（診察）", style:"primary" }
+        ],
+        checks: [
+          "採血へ案内"
+        ],
+        backTo: "return"
+      },
 
-let html=`<h2>${s.title}</h2>`;
-html+=`<div class="script">${s.script}</div>`;
+      blood_result: {
+        badge: "通常",
+        badgeClass: "blue",
+        title: "採血結果",
+        script: "採血の結果は、診察で医師からご説明します。\n本日は診察へご案内します。",
+        checks: [
+          "結果説明は診察で行う旨を説明",
+          "診察へ案内"
+        ],
+        backTo: "nr_blood"
+      },
 
-if(s.buttons){
-s.buttons.forEach(b=>{
-html+=`<button onclick="render('${b.id}')">${b.label}</button>`;
-});
-}
+      nr_physio: {
+        badge: "通常",
+        badgeClass: "blue",
+        title: "物療（電気）",
+        script: "物療（電気）の指示が出ている場合、そのままご案内可能です。",
+        checks: [
+          "カルテで物療の指示を確認"
+        ],
+        backTo: "return"
+      },
 
-if(s.checks){
-s.checks.forEach(c=>{
-html+=`<div class="check">□ ${c}</div>`;
-});
-}
+      nr_rehab: {
+        badge: "通常",
+        badgeClass: "blue",
+        title: "運動リハのみ",
+        script: "予約時間に合わせてご案内します。",
+        checks: [
+          "予約枠（20分）を確認"
+        ],
+        backTo: "return"
+      },
 
-html+=`<br><button onclick="render('home')">ホーム</button>`;
+      results: {
+        badge: "通常",
+        badgeClass: "blue",
+        title: "結果を聞きたい",
+        script: "どちらの結果ですか？",
+        buttons: [
+          { id:"bone_result_home", label:"骨塩結果", style:"primary" },
+          { id:"blood_result_home", label:"採血結果", style:"primary" }
+        ]
+      },
 
-document.getElementById("detail").innerHTML=html;
-}
+      bone_result_home: {
+        badge: "通常",
+        badgeClass: "blue",
+        title: "骨塩結果",
+        script: "骨塩の結果は、診察で医師からご説明します。\n本日は診察へご案内します。",
+        checks: [
+          "結果説明は診察で行う旨を説明",
+          "診察へ案内"
+        ],
+        backTo: "results"
+      },
 
-renderMenu();
-render("home");
+      blood_result_home: {
+        badge: "通常",
+        badgeClass: "blue",
+        title: "採血結果",
+        script: "採血の結果は、診察で医師からご説明します。\n本日は診察へご案内します。",
+        checks: [
+          "結果説明は診察で行う旨を説明",
+          "診察へ案内"
+        ],
+        backTo: "results"
+      },
 
-</script>
+      mri: {
+        badge: "通常",
+        badgeClass: "blue",
+        title: "MRI予約",
+        script: "MRIの予約ですね。\n予約は別のiPadで取得します。",
+        hint: "細かい詳細は「まさき」へ確認。",
+        detail: "手順：\n1) 希望の日付を伺う\n2) 別iPadで予約日時を入力\n3) 患者情報＋予約日時を両面印刷して、お会計時に渡す\n4) iPad と 電カルへ入力\n5) 診療情報提供書を印刷 → スキャン",
+        checks: [
+          "希望日を確認",
+          "別iPadで予約入力",
+          "患者情報＋予約日時を両面印刷（会計時に渡す）",
+          "iPadと電カルへ入力",
+          "診療情報提供書を印刷 → スキャン",
+          "細かい詳細は「まさき」へ確認"
+        ]
+      },
 
+      wait: {
+        badge: "待ち",
+        badgeClass: "amber",
+        title: "待ち状況 / 外出案内",
+        script: "現在の待ち人数はどれくらいですか？",
+        buttons: [
+          { id:"wait_0_5", label:"0〜5人（空いてる）", style:"ok" },
+          { id:"wait_6_10", label:"6〜10人（少しかかる）", style:"warn" },
+          { id:"wait_11p", label:"11人以上（混雑）", style:"danger" }
+        ]
+      },
+
+      wait_0_5: {
+        badge: "待ち",
+        badgeClass: "amber",
+        title: "待ち状況（0〜5人）",
+        script: "現在は比較的空いております。\n診察内容により順番が前後する場合があります。",
+        backTo: "wait"
+      },
+
+      wait_6_10: {
+        badge: "待ち",
+        badgeClass: "amber",
+        title: "待ち状況（6〜10人）",
+        script: "現在やや混み合っております。\n診察内容により順番が前後する場合があります。",
+        backTo: "wait"
+      },
+
+      wait_11p: {
+        badge: "待ち",
+        badgeClass: "amber",
+        title: "待ち状況（11人以上）",
+        script: "現在混雑しております。\n受付を済ませていただければ外出も可能です。",
+        detail: "外出時：\nお戻りの際にピンクの番号札を受付にお渡しください。\n順番の更新は、白の番号札裏面のQRコードから確認できます。",
+        backTo: "wait"
+      },
+
+      docs: {
+        badge: "書類",
+        badgeClass: "red",
+        title: "書類",
+        script: "どの書類ですか？",
+        buttons: [
+          { id:"docs_rousai", label:"労災（書類）", style:"danger" },
+          { id:"docs_jibai", label:"自賠責（書類）", style:"danger" },
+          { id:"docs_shindan", label:"当院発行 診断書A4", style:"primary" },
+          { id:"docs_common", label:"任意保険 / 傷病手当 / 生命保険 / その他", style:"warn" },
+          { id:"docs_receive", label:"受け取り（本人確認）", style:"primary" }
+        ]
+      },
+
+      docs_rousai: {
+        badge: "書類",
+        badgeClass: "red",
+        title: "書類：労災",
+        script: "労災の書類ですね。\nまず「提出先」「書式の有無」「期限」の3点を確認します。",
+        hint: "作成には2〜3週間ほど。完成確認のお電話後に来院ください。",
+        checks: [
+          "① 提出先（会社 / 労基 / 保険者）を確認",
+          "② 指定書式の有無（持参 / 当院記入欄）を確認",
+          "③ 期限（いつまでに必要か）を確認",
+          "書類の種類を確認しお預かり（控え必要ならコピー）",
+          "作成目安（2〜3週）を説明"
+        ],
+        backTo: "docs"
+      },
+
+      docs_jibai: {
+        badge: "書類",
+        badgeClass: "red",
+        title: "書類：自賠責",
+        script: "自賠責の書類ですね。\nまず「提出先」「書式の有無」「期限」の3点を確認します。",
+        hint: "作成には2〜3週間ほど。完成確認のお電話後に来院ください。",
+        checks: [
+          "① 提出先（保険会社 / 自賠責 / 弁護士等）を確認",
+          "② 指定書式の有無（持参 / 当院記入欄）を確認",
+          "③ 期限（いつまでに必要か）を確認",
+          "保険会社名 / 担当者（分かる範囲）を確認",
+          "お預かり（控え必要ならコピー）",
+          "作成目安（2〜3週）を説明"
+        ],
+        backTo: "docs"
+      },
+
+      docs_shindan: {
+        badge: "書類",
+        badgeClass: "red",
+        title: "当院発行 診断書A4",
+        script: "当院発行の診断書（A4）ですね。\n料金は税込5,500円です。",
+        hint: "受け取り後の修正は、手数料がかかる場合があります。",
+        detail: "完成まで2〜3週間。\n院長記入は火曜・水曜・木曜のお昼休み。",
+        checks: [
+          "用途（提出先）を確認",
+          "記載希望の内容があるか確認",
+          "料金 5,500円 を説明",
+          "受け取り前に内容確認する旨を説明",
+          "受取後の修正は手数料の可能性を説明"
+        ],
+        backTo: "docs"
+      },
+
+      docs_common: {
+        badge: "書類",
+        badgeClass: "red",
+        title: "書類：共通案内",
+        script: "書類の料金は、内容や保険会社の指定により異なります。\n作成には2〜3週間ほどお時間をいただいております。",
+        detail: "完成確認のお電話をしていただいてからご来院ください。\n医師は火曜・水曜・木曜のお昼休みに書類を作成しております。\nそのため即日発行はできません。",
+        backTo: "docs"
+      },
+
+      docs_receive: {
+        badge: "書類",
+        badgeClass: "red",
+        title: "書類：受け取り",
+        script: "書類のお受け取りですね。\n本人確認をさせていただきます。",
+        detail: "個人情報を含むため、本人確認が取れない場合はお渡しできません。",
+        buttons: [
+          { id:"docs_proxy", label:"代理受取（委任状）", style:"warn" }
+        ],
+        checks: [
+          "診察券を確認",
+          "生年月日・住所の口頭確認",
+          "必要なら保険証 / マイナ確認"
+        ],
+        backTo: "docs"
+      },
+
+      docs_proxy: {
+        badge: "書類",
+        badgeClass: "red",
+        title: "書類：代理受取",
+        script: "代理の方が受け取られる場合は、委任状と身分証の確認が必要です。\n本人確認が取れない場合はお渡しできません。",
+        checks: [
+          "委任状を確認",
+          "代理人の身分証を確認"
+        ],
+        backTo: "docs_receive"
+      },
+
+      rousai: {
+        badge: "労災",
+        badgeClass: "red",
+        title: "労災",
+        script: "今回のケガはどちらですか？",
+        buttons: [
+          { id:"rousai_work", label:"業務中", style:"danger" },
+          { id:"rousai_commute", label:"通勤中", style:"danger" },
+          { id:"rousai_unknown", label:"まだ分からない", style:"warn" }
+        ]
+      },
+
+      rousai_work: {
+        badge: "労災",
+        badgeClass: "red",
+        title: "労災：業務中",
+        script: "仕事中のケガは健康保険を使用できません。\n必要書類が揃うまでは、いったん10割でのお預かりになります。",
+        detail: "当院が最初の受診 → 5号\n他院からの転院 → 6号\n認定後に返金。",
+        checks: [
+          "業務中のケガであることを確認",
+          "健康保険は使えないと説明",
+          "必要書類が揃うまで10割預かりと説明"
+        ],
+        backTo: "rousai"
+      },
+
+      rousai_commute: {
+        badge: "労災",
+        badgeClass: "red",
+        title: "労災：通勤中",
+        script: "通勤中のケガは健康保険を使用できません。\n必要書類が揃うまでは、いったん10割でのお預かりになります。",
+        detail: "当院が最初の受診 → 16号の3\n他院からの転院 → 16号の4\n認定後に返金。",
+        checks: [
+          "通勤中のケガであることを確認",
+          "健康保険は使えないと説明",
+          "必要書類が揃うまで10割預かりと説明"
+        ],
+        backTo: "rousai"
+      },
+
+      rousai_unknown: {
+        badge: "労災",
+        badgeClass: "red",
+        title: "労災：まだ分からない",
+        script: "お仕事中・通勤中のケガの場合は健康保険は使えません。\n勤務先にご確認をお願いします。",
+        backTo: "rousai"
+      },
+
+      accident: {
+        badge: "事故/第三者",
+        badgeClass: "red",
+        title: "自賠責 / 第三者",
+        script: "どのケースですか？",
+        buttons: [
+          { id:"acc_traffic", label:"交通事故（相手あり）", style:"danger" },
+          { id:"acc_third", label:"第三者行為", style:"danger" }
+        ]
+      },
+
+      acc_traffic: {
+        badge: "事故/第三者",
+        badgeClass: "red",
+        title: "交通事故（相手あり）",
+        script: "健康保険は使用できません。\n保険会社から当院へ連絡が入るまでは10割でのお預かりになります。",
+        detail: "保険会社から当院へ連絡が入り、確認が取れたら精算方法をご案内します。",
+        checks: [
+          "健康保険は使えないと説明",
+          "保険会社からの連絡有無を確認",
+          "未確認なら10割預かりと説明"
+        ],
+        backTo: "accident"
+      },
+
+      acc_third: {
+        badge: "事故/第三者",
+        badgeClass: "red",
+        title: "第三者行為",
+        script: "第三者行為は、健康保険が使えない場合があります。\n保険者へ確認をお願いします。",
+        detail: "確認が取れない場合や保険適用外なら、10割負担となります。",
+        checks: [
+          "第三者行為であることを確認",
+          "保険者へ確認が必要と説明",
+          "必要なら10割負担を案内"
+        ],
+        backTo: "accident"
+      },
+
+      seiho: {
+        badge: "生保",
+        badgeClass: "green",
+        title: "生活保護",
+        script: "生活保護の医療扶助での受診ですね。",
+        buttons: [
+          { id:"seiho_have", label:"医療券あり", style:"ok" },
+          { id:"seiho_no", label:"医療券なし / 電話確認まだ", style:"danger" },
+          { id:"seiho_unknown", label:"不明", style:"warn" }
+        ]
+      },
+
+      seiho_have: {
+        badge: "生保",
+        badgeClass: "green",
+        title: "生活保護：医療券あり",
+        script: "医療券を確認します。",
+        checks: [
+          "有効期限確認",
+          "医療機関名（まさき整形外科）確認",
+          "傷病名確認",
+          "負担欄確認"
+        ],
+        backTo: "seiho"
+      },
+
+      seiho_no: {
+        badge: "生保",
+        badgeClass: "green",
+        title: "生活保護：電話確認が取れない",
+        script: "担当のケースワーカーへ、当院へ受診する旨をお伝えください。\n市から当院へ電話確認が取れれば、医療扶助で受診可能です。",
+        detail: "電話確認が取れない場合は、医療扶助としては受付できません。\nただし、10割（自費扱い）であれば本日は受診できます。\n10割の場合は当日のお支払いが必要です。",
+        checks: [
+          "ケースワーカーへ連絡依頼を案内",
+          "医療扶助は電話確認が必要と説明",
+          "確認不可なら10割（自費）で受診可能と説明",
+          "10割の場合は当日支払いが必要と説明"
+        ],
+        backTo: "seiho"
+      },
+
+      seiho_unknown: {
+        badge: "生保",
+        badgeClass: "green",
+        title: "生活保護：不明",
+        script: "担当のケースワーカーへ、当院で受診可能かご確認ください。\n電話確認が取れれば医療扶助で受診可能です。",
+        detail: "電話確認が取れない場合は医療扶助としては受付できませんが、10割（自費扱い）であれば本日は受診できます。",
+        backTo: "seiho"
+      },
+
+      crutch: {
+        badge: "松葉",
+        badgeClass: "blue",
+        title: "松葉杖",
+        script: "松葉杖のご用件はどちらですか？",
+        buttons: [
+          { id:"crutch_lend", label:"貸出（診察必須）", style:"primary" },
+          { id:"crutch_return", label:"返却", style:"primary" }
+        ]
+      },
+
+      crutch_lend: {
+        badge: "松葉",
+        badgeClass: "blue",
+        title: "松葉杖：貸出",
+        script: "松葉杖の貸出は診察が必要になります。\n借用書（本紙＋控え）と預かり金5,000円をお預かりします。",
+        checks: [
+          "診察へ案内（貸出判断は医師）",
+          "借用書 本紙＋控え（2枚）",
+          "5,000円 預かり",
+          "控えを患者へ渡した",
+          "カルテ記録"
+        ],
+        backTo: "crutch"
+      },
+
+      crutch_return: {
+        badge: "松葉",
+        badgeClass: "blue",
+        title: "松葉杖：返却",
+        script: "松葉杖の返却ですね。\n本日は診察のご予定はありますか？",
+        buttons: [
+          { id:"crutch_return_visit", label:"ある（原則）", style:"ok" },
+          { id:"crutch_return_novisit", label:"ない（入院・もう使わない等）", style:"warn" }
+        ],
+        backTo: "crutch"
+      },
+
+      crutch_return_visit: {
+        badge: "松葉",
+        badgeClass: "blue",
+        title: "松葉杖：返却（診察あり）",
+        script: "原則、診察後に返却処理を行います。\n借用書をご提示ください。",
+        checks: [
+          "借用書確認",
+          "使用日数を確認",
+          "当日会計と合算し使用料を精算"
+        ],
+        backTo: "crutch_return"
+      },
+
+      crutch_return_novisit: {
+        badge: "松葉",
+        badgeClass: "blue",
+        title: "松葉杖：返却（診察なし）",
+        script: "医師の診察なしで松葉杖を終了される場合は、自己判断での返却となります。\nその後の転倒や症状悪化について、当院では責任を負いかねます。",
+        detail: "必要であれば、診察後に終了することも可能です。",
+        checks: [
+          "自己判断での返却の説明済",
+          "借用書の返却欄サイン確認"
+        ],
+        backTo: "crutch_return"
+      },
+
+      xp: {
+        badge: "通常",
+        badgeClass: "blue",
+        title: "XP（レントゲン）",
+        script: "レントゲン（XP）は診察が必要になります。\n先に診察受付へご案内します。",
+        checks: [
+          "診察必須の説明を伝えた"
+        ]
+      },
+
+      money: {
+        badge: "共通",
+        badgeClass: "amber",
+        title: "金額説明",
+        script: "どの説明が必要ですか？",
+        buttons: [
+          { id:"money_common", label:"金額について（点数制）", style:"warn" },
+          { id:"money_tenwari", label:"10割いくら？", style:"primary" }
+        ]
+      },
+
+      money_common: {
+        badge: "共通",
+        badgeClass: "amber",
+        title: "金額について（共通）",
+        script: "診療は「点数制」で計算しているため、内容によって金額が変わります。\n診察・処置後に確定します。",
+        backTo: "money"
+      },
+
+      money_tenwari: {
+        badge: "共通",
+        badgeClass: "amber",
+        title: "10割いくら？",
+        script: "診療は点数制のため内容により変わります。\n目安として、診察のみであれば数千円〜1万円前後が多いですが、検査や処置で変動します。\n正確な金額は診察後に確定します。",
+        backTo: "money"
+      },
+
+      jihi: {
+        badge: "自費",
+        badgeClass: "amber",
+        title: "自費 / 材料費",
+        script: "材料費や自費物品は、保険とは別で自費になります。\n10割負担とは別の扱いです。",
+        detail: "現状は一覧表で運用。\nよく使うものから順に今後組み込み予定。",
+        checks: [
+          "10割負担とは別の自費と説明",
+          "一覧表で金額確認"
+        ]
+      },
+
+      sand: {
+        badge: "待ち",
+        badgeClass: "amber",
+        title: "サンド / 逆サンド",
+        script: "混雑時の案内はどれですか？",
+        buttons: [
+          { id:"sand_def", label:"サンド / 逆サンド（定義）", style:"warn" },
+          { id:"sand_elec", label:"物療がある人を先に案内したい", style:"primary" },
+          { id:"sand_rehab", label:"運動リハ予約が優先", style:"primary" }
+        ]
+      },
+
+      sand_def: {
+        badge: "待ち",
+        badgeClass: "amber",
+        title: "サンド / 逆サンド",
+        script: "■ サンド：\n「物療（電気）」と「運動リハ」の間に診察を挟む\n\n■ 逆サンド：\n診察 → 物療（電気） → 運動リハ（または逆順）",
+        detail: "混雑時は「物療がある人は先に物療へ案内」できる場合があります。\n※カルテの指示確認が前提",
+        backTo: "sand"
+      },
+
+      sand_elec: {
+        badge: "待ち",
+        badgeClass: "amber",
+        title: "混雑時：物療を先に案内",
+        script: "診察が混んでいる場合、物療（電気）がある方は先に物療へご案内できることがあります。",
+        detail: "※カルテで指示が出ている方のみ",
+        checks: [
+          "カルテで物療の指示を確認"
+        ],
+        backTo: "sand"
+      },
+
+      sand_rehab: {
+        badge: "待ち",
+        badgeClass: "amber",
+        title: "運動リハ：予約優先",
+        script: "運動器リハビリは予約が最優先です（20分間隔）。\n予約時間に合わせてご案内します。",
+        checks: [
+          "予約枠（20分）を確認"
+        ],
+        backTo: "sand"
+      }
+    };
+
+    const CHECK_STORE_KEY = "masaki_os_v035_checks";
+    let currentScreen = "home";
+    let checks = {};
+
+    function loadChecks(){
+      try{
+        const raw = localStorage.getItem(CHECK_STORE_KEY);
+        if(raw){ checks = JSON.parse(raw) || {}; }
+      }catch(e){
+        checks = {};
+      }
+    }
+
+    function saveChecks(){
+      localStorage.setItem(CHECK_STORE_KEY, JSON.stringify(checks));
+    }
+
+    function getCheckKey(screenId, idx){
+      return screenId + "__" + idx;
+    }
+
+    function renderMenu(){
+      const grid = document.getElementById("menuGrid");
+      grid.innerHTML = "";
+      MENU.forEach(function(item){
+        const btn = document.createElement("button");
+        btn.className = "tap-btn " + (item.style || "");
+        btn.textContent = item.label;
+        btn.setAttribute("data-target", item.id);
+        grid.appendChild(btn);
+      });
+    }
+
+    function renderScreen(screenId){
+      currentScreen = screenId;
+      const s = SCREENS[screenId];
+      const detail = document.getElementById("detailArea");
+      const pathChip = document.getElementById("pathChip");
+      pathChip.textContent = screenId.toUpperCase();
+
+      let html = "";
+
+      html += '<div class="title-row">';
+      html +=   '<div class="title-wrap">';
+      html +=     '<div class="badge ' + (s.badgeClass || "blue") + '">' + escapeHtml(s.badge || "") + '</div>';
+      html +=     '<h2>' + escapeHtml(s.title || "") + '</h2>';
+      html +=   '</div>';
+      html +=   '<div class="control-row">';
+      if(s.backTo){
+        html += '<button class="tap-btn small-btn" data-target="' + s.backTo + '">戻る</button>';
+      }
+      html +=   '<button class="tap-btn small-btn" data-target="home">ホーム</button>';
+      html +=   '</div>';
+      html += '</div>';
+
+      html += '<div class="script">' + escapeHtml(s.script || "") + '</div>';
+
+      if(s.hint){
+        html += '<div class="hint">' + escapeHtml(s.hint) + '</div>';
+      }
+
+      if(s.buttons && s.buttons.length){
+        html += '<div class="sub-grid">';
+        s.buttons.forEach(function(b){
+          html += '<button class="tap-btn ' + (b.style || "") + '" data-target="' + b.id + '">' + escapeHtml(b.label) + '</button>';
+        });
+        html += '</div>';
+      }
+
+      if(s.checks && s.checks.length){
+        html += '<div class="section-label">内部チェック</div>';
+        html += '<div class="checks">';
+        s.checks.forEach(function(text, idx){
+          const key = getCheckKey(screenId, idx);
+          const checked = checks[key] ? "checked" : "";
+          html += '<label class="check-item">';
+          html +=   '<input type="checkbox" data-check-key="' + key + '" ' + checked + '>';
+          html +=   '<span>' + escapeHtml(text) + '</span>';
+          html += '</label>';
+        });
+        html += '</div>';
+      }
+
+      if(s.detail){
+        html += '<div class="section-label">詳細</div>';
+        html += '<div class="detail-box">' + escapeHtml(s.detail) + '</div>';
+      }
+
+      if(screenId === "home"){
+        html += '<div class="home-note">左メニュー固定 / 右詳細表示のタブレット運用版です。\nスクロール中の誤タップを減らすため、指を動かした場合はタップ判定しない設定にしています。</div>';
+      }
+
+      detail.innerHTML = html;
+      bindCheckEvents();
+    }
+
+    function bindCheckEvents(){
+      document.querySelectorAll('[data-check-key]').forEach(function(el){
+        el.addEventListener('change', function(){
+          const key = el.getAttribute('data-check-key');
+          checks[key] = el.checked ? 1 : 0;
+          saveChecks();
+        });
+      });
+    }
+
+    function escapeHtml(str){
+      return String(str)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    /* ===== 誤タップ防止（Android向け） ===== */
+    let tapState = null;
+    const MOVE_LIMIT = 14;
+    const TIME_LIMIT = 500;
+
+    document.addEventListener("pointerdown", function(e){
+      const btn = e.target.closest(".tap-btn");
+      if(!btn) return;
+      tapState = {
+        btn: btn,
+        x: e.clientX,
+        y: e.clientY,
+        time: Date.now(),
+        moved: false,
+        pointerId: e.pointerId
+      };
+    }, true);
+
+    document.addEventListener("pointermove", function(e){
+      if(!tapState) return;
+      if(e.pointerId !== tapState.pointerId) return;
+      const dx = Math.abs(e.clientX - tapState.x);
+      const dy = Math.abs(e.clientY - tapState.y);
+      if(dx > MOVE_LIMIT || dy > MOVE_LIMIT){
+        tapState.moved = true;
+      }
+    }, true);
+
+    document.addEventListener("pointercancel", function(){
+      tapState = null;
+    }, true);
+
+    document.addEventListener("pointerup", function(e){
+      if(!tapState) return;
+      if(e.pointerId !== tapState.pointerId) return;
+
+      const btn = e.target.closest(".tap-btn");
+      const sameBtn = btn && btn === tapState.btn;
+      const elapsed = Date.now() - tapState.time;
+
+      if(sameBtn && !tapState.moved && elapsed <= TIME_LIMIT){
+        const target = tapState.btn.getAttribute("data-target");
+        if(target && SCREENS[target]){
+          renderScreen(target);
+        }
+      }
+      tapState = null;
+    }, true);
+
+    /* click無効化（誤反応防止） */
+    document.addEventListener("click", function(e){
+      if(e.target.closest(".tap-btn")){
+        e.preventDefault();
+        e.stopPropagation();
+      }
+    }, true);
+
+    loadChecks();
+    renderMenu();
+    renderScreen("home");
+  </script>
 </body>
 </html>
