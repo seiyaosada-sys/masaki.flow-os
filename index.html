@@ -3,946 +3,377 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>まさき整形 受付対応OS（v0.3.4）</title>
+  <title>まさき整形 受付対応OS（v0.3.5 Android版）</title>
+  
+  <meta name="theme-color" content="#0b0c10">
+  <meta name="mobile-web-app-capable" content="yes">
+  <link rel="manifest" href="data:application/json,{'name':'まさき整形OS','short_name':'まさきOS','display':'standalone','start_url':'.'}">
+
   <style>
-    :root{
+    :root {
       --bg:#0b0c10;
       --card:#11131a;
       --text:#f3f4f6;
       --muted:#a7b0be;
       --border:#1f2937;
-
       --blue:#60a5fa;
       --red:#f87171;
       --green:#34d399;
       --amber:#fbbf24;
-
-      --dockH:86px;
-
-      /* 見やすさ調整 */
+      --dockH:92px; /* Android用に少し高く */
+      
       --fw-title:800;
       --fw-btn:800;
       --fw-script:800;
       --fw-sub:700;
     }
 
-    *{ box-sizing:border-box; -webkit-touch-callout:none; }
-    html,body{ height:100%; }
-
-    body{
-      margin:0;
-      font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Noto Sans JP","Segoe UI",Roboto,sans-serif;
-      background:linear-gradient(180deg,#070812,#0b0c10 35%);
-      color:var(--text);
-      -webkit-tap-highlight-color:transparent;
-      overscroll-behavior:none;
+    * { box-sizing:border-box; -webkit-touch-callout:none; }
+    html, body { height:100%; overflow-x: hidden; }
+    
+    body { 
+      margin:0; 
+      font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Noto Sans JP",sans-serif; 
+      background:linear-gradient(180deg,#070812,#0b0c10 35%); 
+      color:var(--text); 
+      -webkit-tap-highlight-color:transparent; 
+      overscroll-behavior:none; 
       touch-action:manipulation;
       padding-bottom: calc(var(--dockH) + env(safe-area-inset-bottom));
+      font-size: 18px;
     }
 
-    header{
-      position:sticky; top:0; z-index:10;
-      backdrop-filter:blur(10px);
-      background:rgba(11,12,16,.72);
-      border-bottom:1px solid var(--border);
-      padding:12px 14px env(safe-area-inset-top);
+    header { 
+      position:sticky; top:0; z-index:10; 
+      backdrop-filter:blur(10px); background:rgba(11,12,16,.85); 
+      border-bottom:1px solid var(--border); 
+      padding:16px 14px env(safe-area-inset-top); 
     }
-    .row{ display:flex; gap:10px; align-items:center; }
-    .title{ font-size:16px; font-weight:var(--fw-title); letter-spacing:.2px; }
-    .chip{
-      font-size:12px; color:var(--muted);
-      border:1px solid var(--border);
-      padding:4px 8px; border-radius:999px;
-      white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
-      max-width:70vw;
+    .row { display:flex; gap:12px; align-items:center; }
+    .title { font-size:18px; font-weight:var(--fw-title); }
+    .chip { font-size:13px; color:var(--muted); border:1px solid var(--border); padding:4px 10px; border-radius:999px; }
+
+    main { 
+      padding:20px 14px 40px; 
+      max-width:1400px; /* タブレット用に拡大 */
+      margin: 0 auto; 
     }
 
-    main{ padding:14px 14px 24px; max-width:1100px; margin:0 auto; }
-
-    .layout{
-      display:grid;
-      gap:12px;
-      grid-template-columns: 1fr;
-      align-items:start;
-    }
-    @media(min-width:900px){
-      .layout{ grid-template-columns: 1fr 340px; }
-      .asideSticky{ position:sticky; top:74px; }
+    .layout { display:grid; gap:16px; grid-template-columns: 1fr; align-items:start; }
+    @media(min-width:1000px){
+      .layout { grid-template-columns: 1fr 380px; }
+      .asideSticky { position:sticky; top:90px; }
     }
 
-    .card{
-      background:rgba(17,19,26,.92);
-      border:1px solid var(--border);
-      border-radius:18px;
-      padding:14px;
-      box-shadow:0 10px 30px rgba(0,0,0,.35);
+    .card { 
+      background:rgba(17,19,26,.95); 
+      border:1px solid var(--border); 
+      border-radius:20px; 
+      padding:20px; 
+      box-shadow:0 15px 35px rgba(0,0,0,.4); 
     }
 
-    .sectionTitle{
-      font-size:13px;
-      font-weight:var(--fw-sub);
-      color:var(--muted);
-      margin:2px 0 8px;
-      letter-spacing:.2px;
-    }
+    .sectionTitle { font-size:14px; font-weight:var(--fw-sub); color:var(--muted); margin-bottom:10px; }
 
-    .script{
-      font-size:26px;
-      line-height:1.32;
-      font-weight:var(--fw-script);
-      letter-spacing:.15px;
-      padding:14px 14px;
-      border-radius:16px;
-      border:1px solid rgba(96,165,250,.28);
-      background:rgba(96,165,250,.10);
-      user-select:none;
+    /* セリフ部分の巨大化 */
+    .script { 
+      font-size:32px; 
+      line-height:1.45; 
+      font-weight:var(--fw-script); 
+      padding:20px; 
+      border-radius:18px; 
+      border:1px solid rgba(96,165,250,.3); 
+      background:rgba(96,165,250,.08); 
       white-space:pre-wrap;
+      margin-bottom: 20px;
     }
 
-    .hint{
-      color:var(--muted);
-      font-size:13px;
-      line-height:1.65;
-      white-space:pre-wrap;
+    .btnGrid { display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:12px; margin-top:20px; }
+    
+    /* ボタンの巨大化 */
+    button {
+      appearance:none; border:none; border-radius:14px;
+      padding:22px 16px; font-size:22px; font-weight:var(--fw-btn);
+      background:var(--card); color:var(--text); border:1px solid var(--border);
+      cursor:pointer; transition: transform 0.1s;
     }
+    button:active { transform: scale(0.97); background: var(--border); }
+    button.primary { background: var(--blue); color: #000; border:none; }
+    button.danger { background: var(--red); color: #000; border:none; }
+    button.warn { background: var(--amber); color: #000; border:none; }
+    button.small { padding:10px 16px; font-size:16px; border-radius:10px; }
 
-    .sep{ height:1px; background:var(--border); margin:10px 0; }
+    /* 下部ナビゲーション */
+    .dock {
+      position:fixed; bottom:0; left:0; right:0; height:var(--dockH);
+      background:rgba(11,12,16,.9); border-top:1px solid var(--border);
+      display:flex; justify-content:space-around; align-items:center;
+      padding-bottom: env(safe-area-inset-bottom); backdrop-filter:blur(15px);
+    }
+    .dockItem { 
+      flex:1; text-align:center; color:var(--muted); font-size:13px; font-weight:700;
+      display:flex; flex-direction:column; gap:4px; text-decoration:none;
+    }
+    .dockItem.active { color:var(--blue); }
+    .icon { font-size:24px; }
 
-    .btnGrid{ display:grid; grid-template-columns:1fr; gap:10px; }
-    @media(min-width:720px){ .btnGrid{ grid-template-columns:1fr 1fr; } }
+    /* モーダル */
+    .modalOverlay {
+      position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,.8);
+      display:none; align-items:center; justify-content:center; z-index:100; padding:20px;
+    }
+    .modal { background:var(--card); border:1px solid var(--border); border-radius:24px; padding:24px; width:100%; max-width:600px; }
+    .modalText { font-size:20px; line-height:1.6; white-space:pre-wrap; margin:20px 0; }
 
-    button{
-      width:100%;
-      border:1px solid var(--border);
-      background:rgba(255,255,255,.02);
-      color:var(--text);
-      border-radius:16px;
-      padding:14px 14px;
-      font-size:18px;
-      font-weight:var(--fw-btn);
-      text-align:left;
-      cursor:pointer;
-      user-select:none;
-      transition:transform .04s ease, border-color .12s ease, background .12s ease;
-      touch-action:manipulation;
-    }
-    button:active{ transform:scale(.99); }
-    button.primary{ border-color:rgba(96,165,250,.48); background:rgba(96,165,250,.12); }
-    button.danger{ border-color:rgba(248,113,113,.60); background:rgba(248,113,113,.10); }
-    button.ok{ border-color:rgba(52,211,153,.60); background:rgba(52,211,153,.10); }
-    button.warn{ border-color:rgba(251,191,36,.60); background:rgba(251,191,36,.08); }
-    button.small{
-      font-size:14px;
-      font-weight:var(--fw-btn);
-      padding:10px 12px;
-      border-radius:14px;
-      text-align:center;
-    }
-
-    .footerRow{ display:flex; gap:10px; flex-wrap:wrap; }
-    .grow{ flex:1; min-width:140px; }
-
-    .actions{ display:grid; gap:8px; }
-    label.check{
-      display:flex; gap:10px; align-items:flex-start;
-      padding:10px 12px;
-      border-radius:14px;
-      border:1px solid var(--border);
-      background:rgba(255,255,255,.02);
-      font-size:15px;
-      font-weight:700;
-      line-height:1.45;
-    }
-    input[type="checkbox"]{ width:20px; height:20px; margin-top:1px; }
-
-    .badge{
-      display:inline-block;
-      font-size:12px;
-      font-weight:800;
-      padding:4px 8px;
-      border-radius:999px;
-      border:1px solid var(--border);
-      color:var(--muted);
-      letter-spacing:.2px;
-    }
-    .badge.red{ color:#fecaca; border-color:rgba(248,113,113,.5); background:rgba(248,113,113,.10); }
-    .badge.blue{ color:#bfdbfe; border-color:rgba(96,165,250,.5); background:rgba(96,165,250,.10); }
-    .badge.green{ color:#a7f3d0; border-color:rgba(52,211,153,.5); background:rgba(52,211,153,.10); }
-    .badge.amber{ color:#fde68a; border-color:rgba(251,191,36,.5); background:rgba(251,191,36,.10); }
-
-    /* ===== Modal ===== */
-    .modalBack{
-      position:fixed; inset:0;
-      background:rgba(0,0,0,.55);
-      display:none;
-      align-items:center;
-      justify-content:center;
-      padding:16px;
-      z-index:50;
-      touch-action:none;
-    }
-    .modal{
-      width:min(980px, 100%);
-      border-radius:18px;
-      border:1px solid var(--border);
-      background:rgba(17,19,26,.98);
-      padding:14px;
-      box-shadow:0 20px 60px rgba(0,0,0,.55);
-      max-height: calc(100dvh - 32px);
-      overflow:auto;
-      transform: translateY(-4vh);
-    }
-    .modalTitle{ font-size:16px; font-weight:800; margin-bottom:8px; }
-    .modalText{ color:var(--text); font-size:14px; line-height:1.7; white-space:pre-wrap; }
-
-    /* ===== Dock ===== */
-    .dock{
-      position:fixed; left:0; right:0; bottom:0;
-      height:calc(var(--dockH) + env(safe-area-inset-bottom));
-      padding:10px 10px calc(10px + env(safe-area-inset-bottom));
-      background:rgba(11,12,16,.86);
-      backdrop-filter:blur(12px);
-      border-top:1px solid var(--border);
-      z-index:40;
-    }
-    .dockInner{
-      max-width:1100px; margin:0 auto;
-      display:grid; grid-template-columns:repeat(5, 1fr);
-      gap:10px;
-    }
-    .dockBtn{
-      border-radius:18px;
-      padding:10px 8px;
-      text-align:center;
-      font-size:13px;
-      font-weight:800;
-      line-height:1.1;
-      border:1px solid var(--border);
-      background:rgba(255,255,255,.02);
-      user-select:none;
-    }
-    .dockBtn .icon{ display:block; font-size:18px; margin-bottom:6px; }
-    .dockBtn.active{ border-color:rgba(96,165,250,.48); background:rgba(96,165,250,.10); }
-    .dockBtn.docs{ border-color:rgba(248,113,113,.35); }
-    .dockBtn.money{ border-color:rgba(251,191,36,.35); }
-    .dockBtn.crutch{ border-color:rgba(96,165,250,.25); }
-    .dockBtn.seiho{ border-color:rgba(52,211,153,.25); }
-
-    details.accordion{
-      border:1px solid var(--border);
-      background:rgba(255,255,255,.02);
-      border-radius:16px;
-      padding:10px 12px;
-    }
-    details.accordion summary{
-      cursor:pointer;
-      font-weight:800;
-      user-select:none;
-      list-style:none;
-      outline:none;
-    }
-    details.accordion summary::-webkit-details-marker{ display:none; }
-    .detailBtns{ display:grid; gap:8px; margin-top:10px; }
-    .mini{
-      font-size:12px;
-      line-height:1.6;
-      color:var(--muted);
-      border:1px solid var(--border);
-      background:rgba(255,255,255,.01);
-      padding:10px 12px;
-      border-radius:14px;
-      white-space:pre-wrap;
-    }
+    .badge { display:inline-block; padding:4px 10px; border-radius:6px; font-size:12px; font-weight:800; margin-bottom:8px; }
+    .badge.red { background:var(--red); color:#000; }
+    .badge.blue { background:var(--blue); color:#000; }
+    .badge.green { background:var(--green); color:#000; }
+    .badge.amber { background:var(--amber); color:#000; }
   </style>
 </head>
 
 <body>
+
 <header>
   <div class="row">
-    <div class="title">まさき整形 受付対応OS（v0.3.4）</div>
-    <span class="chip" id="pathChip">HOME</span>
+    <div class="title">まさき整形OS</div>
+    <div class="chip" id="pathChip">HOME</div>
+    <button class="small" style="margin-left:auto" onclick="location.reload(true)">更新</button>
   </div>
 </header>
 
 <main>
   <div class="layout">
-    <div class="card" id="screen"></div>
-    <aside class="card asideSticky" id="aside"></aside>
+    <div id="screen" class="card">
+      </div>
+
+    <aside class="asideSticky">
+      <div id="aside" class="card">
+        </div>
+    </aside>
   </div>
 </main>
 
-<nav class="dock" aria-label="常駐メニュー">
-  <div class="dockInner">
-    <div class="dockBtn" id="dockHome" onclick="jump('home')" ontouchstart="jump('home')"><span class="icon">🏠</span>ホーム</div>
-    <div class="dockBtn docs" id="dockDocs" onclick="jump('docs_entry')" ontouchstart="jump('docs_entry')"><span class="icon">🧾</span>書類</div>
-    <div class="dockBtn money" id="dockMoney" onclick="jump('money_hub')" ontouchstart="jump('money_hub')"><span class="icon">💰</span>金額</div>
-    <div class="dockBtn crutch" id="dockCrutch" onclick="jump('crutch_entry')" ontouchstart="jump('crutch_entry')"><span class="icon">🩼</span>松葉</div>
-    <div class="dockBtn seiho" id="dockSeiho" onclick="jump('seiho_entry')" ontouchstart="jump('seiho_entry')"><span class="icon">🟢</span>生保</div>
-  </div>
+<nav class="dock">
+  <a href="#" class="dockItem active" id="dockHome" onclick="resetSession()">
+    <span class="icon">🏠</span><span>ホーム</span>
+  </a>
+  <a href="#" class="dockItem" id="dockDocs" onclick="jump('docs_entry')">
+    <span class="icon">📋</span><span>書類/労災</span>
+  </a>
+  <a href="#" class="dockItem" id="dockMoney" onclick="jump('money_hub')">
+    <span class="icon">💰</span><span>会計/10割</span>
+  </a>
+  <a href="#" class="dockItem" id="dockCrutch" onclick="jump('crutch_1')">
+    <span class="icon">🦯</span><span>松葉杖</span>
+  </a>
 </nav>
 
-<div class="modalBack" id="modalBack">
-  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
-    <div class="row" style="justify-content: space-between;">
-      <div class="modalTitle" id="modalTitle">詳細</div>
-      <button class="small" id="closeModal">閉じる</button>
-    </div>
-    <div class="modalText" id="modalText"></div>
+<div id="modalBack" class="modalOverlay">
+  <div class="modal">
+    <div id="modalTitle" class="sectionTitle">詳細</div>
+    <div id="modalText" class="modalText">内容</div>
+    <button class="primary" style="width:100%" id="closeModal">閉じる</button>
   </div>
 </div>
 
 <script>
-/* ===== Common texts ===== */
-const COMMON = {
-  money_common: `診療は「点数制」で計算しているため、内容によって金額が変わります。\n診察・処置後に確定します。`,
-  tenwari_common: `診療は点数制のため内容により変わります。\n目安として、診察のみであれば「数千円〜1万円前後」が多いですが、検査や処置で変動します。\n正確な金額は診察後に確定します。`,
-
-  docs_common: `書類の料金は、内容や保険会社の指定により異なります。\n作成には2〜3週間ほどお時間をいただいております。\n\n完成確認のお電話をしていただいてからご来院ください。\n医師は火曜・水曜・木曜のお昼休みに書類を作成しております。\nそのため即日発行はできません。`,
-  docs_receive: `書類のお受け取りですね。\n本人確認をさせていただきます。\n\n個人情報を含むため、本人確認が取れない場合はお渡しできません。`,
-
-  shindansho_a4: `当院発行の診断書（A4）ですね。\n料金は5,500円です。\n\n受け取り後の修正は、手数料がかかる場合があります。\n記載内容（氏名・日付・事故状況など）をお渡し前に一緒に確認させてください。`,
-
-  seiho_no: `担当のケースワーカーへ、当院（まさき整形外科）へ受診する旨をお伝えください。\n市から当院へ電話確認が取れれば、生活保護（医療扶助）で受診可能です。\n\n電話確認が取れない場合は、生活保護（医療扶助）としては受付できません。\nただし、10割（自費扱い）であれば本日は受診できます。\n\n後日、手続きが整った場合の精算可否は市（保険者）の判断になりますので、ケースワーカーにご確認ください。\n10割で受診される場合は、当日のお支払いが必要になります。`,
-
-  crutch_self: `医師の診察なしで松葉杖を終了される場合は、自己判断での返却となります。\nその後の転倒や症状悪化について、当院では責任を負いかねます。\n\n必要であれば、診察後に終了することも可能です。`,
-
-  xp_rule: `レントゲン（XP）は診察が必要になります。\n先に診察受付へご案内します。`,
-
-  sand_tip: `■ サンド：\n「物療（電気）」と「運動リハ」の間に診察を挟む\n\n■ 逆サンド：\n診察 → 物療（電気） → 運動リハ（または逆順）\n\n混雑時は「物療がある人は先に物療へ案内」できる場合があります。\n（※カルテの指示確認が前提）`,
-
-  /* ✅ 骨塩 */
-  bone_base: `骨密度（骨塩）検査ですね。\n検査部位でご案内が変わります。`,
-  bone_forearm: `骨密度（前腕）は当日検査できます。\nこのまま骨塩へご案内します。`,
-  bone_spine_hip: `骨密度（腰椎・大腿）は当日以降のご案内になります。\n検査日を確認してご案内します。\n（結果説明は診察で行います）`,
-  bone_result: `骨塩の結果は、診察で医師からご説明します。\n本日は診察へご案内します。`,
-
-  /* ✅ 採血 */
-  blood_draw: `採血ですね。\nこのまま採血へご案内します。`,
-  blood_result: `採血の結果は、診察で医師からご説明します。\n本日は診察へご案内します。`,
-
-  /* ✅ MRI予約（サブ） */
-  mri_reserve: `MRIの予約ですね。\n予約は別のiPadで取得します。\n\n手順：\n1) 希望の日付を伺う\n2) 日付を入力\n3) 患者情報＋予約日時を両面印刷して、お会計時にお渡し\n4) iPad と 電カルへ入力\n5) 診療情報提供書を印刷→スキャン\n\n※細かい詳細は「まさき」へ確認。`
-};
+/* ==========================================
+   データ定義 (ここを書き換えてガイドを増やす)
+   ========================================== */
 
 const GLOBAL_DETAILS = [
-  { label: "点数制（共通説明）", text: COMMON.money_common },
-  { label: "10割いくら？（共通）", text: COMMON.tenwari_common },
-  { label: "書類：作成ルール（2〜3週間）", text: COMMON.docs_common },
-  { label: "書類：受取（本人確認）", text: COMMON.docs_receive },
-  { label: "診断書A4：5,500円／修正手数料", text: COMMON.shindansho_a4 },
-  { label: "骨塩：前腕=当日／腰椎大腿=当日以降", text: COMMON.bone_base + "\n\n・前腕：当日\n・腰椎・大腿：当日以降\n（結果は診察で説明）" },
-  { label: "MRI予約（手順）", text: COMMON.mri_reserve },
-  { label: "生保：医療扶助NGでも10割可", text: COMMON.seiho_no },
-  { label: "XP（診察必須）", text: COMMON.xp_rule },
-  { label: "サンド／逆サンド（混雑時）", text: COMMON.sand_tip },
-  { label: "使い方（OS）", text:
-`・青い枠＝患者さんに読むセリフ（大）
-・ボタン＝分岐（迷わせない）
-・チェック＝内部作業（忘れ防止）
-・下の常駐バー＝割り込み（書類/金額/松葉/生保）`
-  }
+  { label:"10割目安", text:"初診：約10,000円〜15,000円\n再診：約3,000円〜5,000円\n※処置や検査により変動します。" },
+  { label:"労災書類", text:"・業務災害：様式第5号\n・通勤災害：様式第16号の3\n・転院の場合：様式第6号 / 16号の4" },
+  { label:"診断書期間", text:"通常、診察日から1ヶ月程度の期間で作成します。\n警察提出用などは当日発行可能です。" }
 ];
 
-/* ===== Flow ===== */
 const FLOW = {
   home: {
-    title:"ホーム", badge:"入口",
-    script:"案件を選択してください。",
-    choices:[
-      {label:"通常（保険）", next:"normal_entry", style:"primary"},
-      {label:"労災（業務・通勤）", next:"rousai_1", style:"primary"},
-      {label:"交通事故・第三者行為", next:"acc_entry", style:"primary"},
-      {label:"待ち状況（外出案内）", next:"wait_1", style:"warn"},
-
-      {label:"骨塩結果（結果は診察）", next:"bone_result_home", style:"primary"},
-      {label:"採血結果（結果は診察）", next:"blood_result_home", style:"primary"},
-      {label:"MRI予約（別iPad）", next:"mri_entry", style:"primary"},
-
-      {label:"自費診療（白玉・美肌など）", next:"jihi_entry", style:"primary"},
-      {label:"XP（レントゲン）", next:"xp_entry", style:"primary"},
-      {label:"混雑時ヘルプ（サンド）", next:"sand_help", style:"warn"},
-      {label:"書類（割り込み）", next:"docs_entry", style:"danger"},
-      {label:"松葉杖（割り込み）", next:"crutch_entry", style:"primary"},
+    title: "受付メインメニュー",
+    script: "本日はどうなさいましたか？\n（内容を選択してください）",
+    choices: [
+      { label: "通常（保険証）", next: "normal_entry", style: "primary" },
+      { label: "労災・通勤災害", next: "rousai_1", style: "danger" },
+      { label: "交通事故・第三者", next: "acc_entry", style: "danger" },
+      { label: "自費（点滴など）", next: "jihi_entry", style: "green" },
+      { label: "書類のみ・診断書", next: "docs_entry", style: "" }
     ]
   },
 
-  /* ===== ホーム常駐：結果系 ===== */
-  bone_result_home:{ title:"骨塩結果", badge:"通常", script:COMMON.bone_result, choices:[
-    {label:"（戻る）ホームへ", next:"home", style:""},
-    {label:"通常（再診）へ", next:"normal_return", style:"primary"}
-  ], actions:["結果説明は診察で行う旨を説明","診察へ案内"] },
-
-  blood_result_home:{ title:"採血結果", badge:"通常", script:COMMON.blood_result, choices:[
-    {label:"（戻る）ホームへ", next:"home", style:""},
-    {label:"通常（再診）へ", next:"normal_return", style:"primary"}
-  ], actions:["結果説明は診察で行う旨を説明","診察へ案内"] },
-
-  /* ===== MRI予約 ===== */
-  mri_entry:{ title:"MRI予約", badge:"通常", script:COMMON.mri_reserve, choices:[
-    {label:"戻る", next:"home", style:""},
-    {label:"ホームへ", next:"home", style:""}
-  ], actions:[
-    "希望日を確認",
-    "別iPadで予約入力",
-    "患者情報＋予約日時を両面印刷（会計時に渡す）",
-    "iPadと電カルへ入力",
-    "診療情報提供書を印刷→スキャン",
-    "細かい詳細は「まさき」へ確認"
-  ]},
-
-  money_hub:{ title:"金額（ハブ）", badge:"共通", script:"どの説明が必要ですか？", choices:[
-    {label:"金額について（点数制）", next:"money_common", style:"warn"},
-    {label:"10割いくら？", next:"tenwari_money", style:"primary"},
-    {label:"ホームへ", next:"home", style:""},
-  ]},
-  money_common:{ title:"金額について（共通）", badge:"共通", script:COMMON.money_common, choices:[
-    {label:"戻る", next:"__BACK__", style:""}, {label:"ホームへ", next:"home", style:""}
-  ]},
-  tenwari_money:{ title:"10割いくら？", badge:"共通", script:COMMON.tenwari_common, choices:[
-    {label:"戻る", next:"__BACK__", style:""}, {label:"ホームへ", next:"home", style:""}
-  ]},
-
-  xp_entry:{ title:"XP（レントゲン）", badge:"通常", script:COMMON.xp_rule, choices:[
-    {label:"診察受付へ案内", next:"xp_to_exam", style:"primary"},
-    {label:"ホームへ", next:"home", style:""},
-  ], actions:["診察必須の説明を伝えた"]},
-  xp_to_exam:{ title:"XP：案内", badge:"通常", script:"診察からのご案内になります。", choices:[
-    {label:"戻る", next:"xp_entry", style:""}, {label:"ホームへ", next:"home", style:""}
-  ]},
-
-  sand_help:{ title:"混雑時ヘルプ（サンド）", badge:"待ち", script:"混雑時の案内はどれですか？", choices:[
-    {label:"サンド／逆サンド（定義）", next:"sand_def", style:"warn"},
-    {label:"物療がある人を先に案内したい", next:"sand_elec_first", style:"primary"},
-    {label:"運動リハ予約が優先（20分間隔）", next:"sand_rehab_priority", style:"primary"},
-    {label:"ホームへ", next:"home", style:""},
-  ]},
-  sand_def:{ title:"サンド／逆サンド", badge:"待ち", script:COMMON.sand_tip, choices:[
-    {label:"戻る", next:"sand_help", style:""}, {label:"ホームへ", next:"home", style:""}
-  ]},
-  sand_elec_first:{ title:"混雑時：物療を先に案内", badge:"待ち",
-    script:"診察が混んでいる場合、物療（電気）がある方は先に物療へご案内できることがあります。\n（カルテで指示が出ている方のみ）",
-    choices:[{label:"戻る", next:"sand_help", style:""},{label:"ホームへ", next:"home", style:""}],
-    actions:["カルテで物療の指示を確認"]
-  },
-  sand_rehab_priority:{ title:"運動リハ：予約優先", badge:"待ち",
-    script:"運動器リハビリは予約が最優先です（20分間隔）。\n予約時間に合わせてご案内します。",
-    choices:[{label:"戻る", next:"sand_help", style:""},{label:"ホームへ", next:"home", style:""}],
-    actions:["予約枠（20分）を確認"]
-  },
-
-  wait_1:{ title:"待ち状況", badge:"待ち", script:"現在の待ち人数は？", choices:[
-    {label:"0〜5人（空いてる）", next:"wait_0_5", style:"ok"},
-    {label:"6〜10人（少しかかる）", next:"wait_6_10", style:"warn"},
-    {label:"11人以上（混雑）", next:"wait_11p", style:"danger"},
-    {label:"ホームへ", next:"home", style:""},
-  ]},
-  wait_0_5:{ title:"待ち状況（0〜5）", badge:"待ち",
-    script:"現在は比較的空いております。\n診察内容により順番が前後する場合があります。",
-    choices:[{label:"戻る", next:"wait_1", style:""},{label:"ホームへ", next:"home", style:""}]
-  },
-  wait_6_10:{ title:"待ち状況（6〜10）", badge:"待ち",
-    script:"現在やや混み合っております。\n診察内容により順番が前後する場合があります。",
-    choices:[{label:"戻る", next:"wait_1", style:""},{label:"ホームへ", next:"home", style:""}]
-  },
-  wait_11p:{ title:"待ち状況（混雑）", badge:"待ち",
-    script:"現在混雑しております。\n受付を済ませていただければ外出も可能です。",
-    choices:[
-      {label:"外出案内（番号札・QR）", next:"wait_out", style:"primary"},
-      {label:"戻る", next:"wait_1", style:""},
-      {label:"ホームへ", next:"home", style:""}
-    ]
-  },
-  wait_out:{ title:"外出案内", badge:"待ち",
-    script:"お戻りの際に、こちらのピンクの番号札を受付にお渡しください。\n順番の更新は、白の番号札裏面のQRコードからご確認いただけます。",
-    hint:"※順番が過ぎている場合は、お戻り時に受付へお声がけください。",
-    choices:[{label:"戻る", next:"wait_11p", style:""},{label:"ホームへ", next:"home", style:""}]
-  },
-
-  /* ===== 書類：労災/自賠責＝聞く3点チェック ===== */
-  docs_entry:{ title:"書類（割り込み）", badge:"書類", script:"書類のご希望はどれですか？", choices:[
-    {label:"労災（書類）", next:"docs_rousai", style:"danger"},
-    {label:"自賠責（書類）", next:"docs_jibaiseki", style:"danger"},
-    {label:"当院発行 診断書A4（5,500円）", next:"docs_shindansho_a4", style:"primary"},
-    {label:"任意保険", next:"docs_common", style:"danger"},
-    {label:"傷病手当受給申請書", next:"docs_common", style:"danger"},
-    {label:"生命保険", next:"docs_common", style:"danger"},
-    {label:"その他", next:"docs_common", style:"danger"},
-    {label:"受け取り（本人確認）", next:"docs_receive", style:"primary"},
-    {label:"ホームへ", next:"home", style:""},
-  ]},
-
-  docs_common:{ title:"書類：作成案内", badge:"書類", script:COMMON.docs_common, choices:[
-    {label:"料金について", next:"docs_fee", style:"warn"},
-    {label:"受け取り（本人確認）", next:"docs_receive", style:"primary"},
-    {label:"戻る", next:"docs_entry", style:""},
-    {label:"ホームへ", next:"home", style:""},
-  ]},
-
-  docs_rousai:{ title:"書類：労災", badge:"書類",
-    script:"労災の書類ですね。\nまず「提出先」「書式の有無」「期限」の3点を確認します。",
-    hint:"※作成2〜3週間。完成確認のお電話後に来院ください。",
-    choices:[
-      {label:"作成期間（共通）", next:"docs_common", style:"warn"},
-      {label:"料金について（共通）", next:"docs_fee", style:"warn"},
-      {label:"受け取り（本人確認）", next:"docs_receive", style:"primary"},
-      {label:"戻る", next:"docs_entry", style:""},
-      {label:"ホームへ", next:"home", style:""},
-    ],
-    actions:[
-      "①提出先（会社/労基/保険者）を確認",
-      "②指定書式の有無（持参/当院記入欄）を確認",
-      "③期限（いつまでに必要か）を確認",
-      "書類の種類を確認しお預かり（控え必要ならコピー）",
-      "作成目安（2〜3週）を説明"
+  // 通常受付
+  normal_entry: {
+    title: "通常受付",
+    badge: "通常",
+    script: "保険証（またはマイナカード）はお持ちですか？",
+    choices: [
+      { label: "はい（確認OK）", next: "home", style: "primary" },
+      { label: "忘れた（10割）", next: "tenwari_money", style: "warn" },
+      { label: "住所等変更あり", next: "home", style: "" }
     ]
   },
 
-  docs_jibaiseki:{ title:"書類：自賠責", badge:"書類",
-    script:"自賠責の書類ですね。\nまず「提出先」「書式の有無」「期限」の3点を確認します。",
-    hint:"※作成2〜3週間。完成確認のお電話後に来院ください。",
-    choices:[
-      {label:"作成期間（共通）", next:"docs_common", style:"warn"},
-      {label:"料金について（共通）", next:"docs_fee", style:"warn"},
-      {label:"受け取り（本人確認）", next:"docs_receive", style:"primary"},
-      {label:"戻る", next:"docs_entry", style:""},
-      {label:"ホームへ", next:"home", style:""},
-    ],
-    actions:[
-      "①提出先（保険会社/自賠責/弁護士等）を確認",
-      "②指定書式の有無（持参/当院記入欄）を確認",
-      "③期限（いつまでに必要か）を確認",
-      "保険会社名/担当者（分かる範囲）を確認",
-      "お預かり（控え必要ならコピー）",
-      "作成目安（2〜3週）を説明"
+  // 労災
+  rousai_1: {
+    title: "労災：入口確認",
+    badge: "労災",
+    script: "今回のケガは「お仕事中」または「通勤中」ですか？",
+    choices: [
+      { label: "はい（労災扱い）", next: "rousai_10wari", style: "danger" },
+      { label: "いいえ（通常へ）", next: "normal_entry", style: "" }
+    ]
+  },
+  rousai_10wari: {
+    title: "労災：10割預かり",
+    badge: "労災",
+    script: "労災書類が届くまでは、いったん10割（全額）でのお預かりとなります。\n書類提出後に返金いたします。",
+    choices: [
+      { label: "いくらかかる？", next: "tenwari_money", style: "primary" },
+      { label: "ホームへ", next: "home", style: "" }
     ]
   },
 
-  docs_shindansho_a4:{ title:"当院発行 診断書A4", badge:"書類",
-    script:COMMON.shindansho_a4,
-    choices:[
-      {label:"作成期間（共通）", next:"docs_common", style:"warn"},
-      {label:"受け取り（本人確認）", next:"docs_receive", style:"primary"},
-      {label:"戻る", next:"docs_entry", style:""},
-      {label:"ホームへ", next:"home", style:""},
-    ],
-    actions:["用途（提出先）を確認","記載希望の内容があるか確認","料金 5,500円 を説明","受け取り前に内容確認する旨を説明","受取後の修正は手数料の可能性を説明"]
-  },
-
-  docs_fee:{ title:"書類：料金", badge:"書類",
-    script:"料金は書類の種類や内容により異なります。\n受付で用紙を確認後にご案内します。\n\n※当院発行 診断書A4は 5,500円です。",
-    choices:[{label:"戻る", next:"docs_entry", style:""},{label:"ホームへ", next:"home", style:""}]
-  },
-
-  docs_receive:{ title:"書類：受け取り", badge:"書類", script:COMMON.docs_receive, choices:[
-    {label:"代理受取（委任状）", next:"docs_proxy", style:"warn"},
-    {label:"戻る", next:"docs_entry", style:""},
-    {label:"ホームへ", next:"home", style:""},
-  ], actions:["診察券を確認","生年月日・住所の口頭確認","必要なら保険証／マイナ確認"]},
-
-  docs_proxy:{ title:"書類：代理受取", badge:"書類",
-    script:"代理の方が受け取られる場合は、委任状と身分証の確認が必要です。\n本人確認が取れない場合はお渡しできません。",
-    choices:[{label:"戻る", next:"docs_receive", style:""},{label:"ホームへ", next:"home", style:""}],
-    actions:["委任状を確認","代理人の身分証を確認"]
-  },
-
-  /* ===== 松葉（既存） ===== */
-  crutch_entry:{ title:"松葉杖（割り込み）", badge:"松葉", script:"松葉杖のご用件はどちらですか？", choices:[
-    {label:"貸出（診察必須）", next:"crutch_lend", style:"primary"},
-    {label:"返却", next:"crutch_return", style:"primary"},
-    {label:"ホームへ", next:"home", style:""},
-  ]},
-  crutch_lend:{ title:"松葉杖：貸出", badge:"松葉",
-    script:"松葉杖の貸出は診察が必要になります。\n借用書（本紙＋控え）と預かり金5,000円をお預かりします。",
-    choices:[{label:"戻る", next:"crutch_entry", style:""},{label:"ホームへ", next:"home", style:""}],
-    actions:["診察へ案内（貸出判断は医師）","借用書 本紙＋控え（2枚）","5,000円 預かり","控えを患者へ渡した","カルテ記録"]
-  },
-  crutch_return:{ title:"松葉杖：返却", badge:"松葉",
-    script:"松葉杖の返却ですね。\n本日は診察のご予定はありますか？",
-    choices:[
-      {label:"ある（原則）", next:"crutch_return_visit", style:"ok"},
-      {label:"ない（入院・もう使わない等）", next:"crutch_return_novisit", style:"warn"},
-      {label:"戻る", next:"crutch_entry", style:""},
-      {label:"ホームへ", next:"home", style:""},
-    ]
-  },
-  crutch_return_visit:{ title:"松葉杖：返却（診察あり）", badge:"松葉",
-    script:"原則、診察後に返却処理を行います。\n借用書をご提示ください。",
-    choices:[
-      {label:"返却処理へ", next:"crutch_finish", style:"primary"},
-      {label:"戻る", next:"crutch_return", style:""},
-      {label:"ホームへ", next:"home", style:""}
-    ],
-    actions:["借用書確認","使用日数を確認","当日会計と合算し使用料を精算"]
-  },
-  crutch_return_novisit:{ title:"松葉杖：返却（診察なし）", badge:"松葉",
-    script:COMMON.crutch_self,
-    choices:[
-      {label:"返却処理へ", next:"crutch_finish", style:"danger"},
-      {label:"戻る", next:"crutch_return", style:""},
-      {label:"ホームへ", next:"home", style:""}
-    ],
-    actions:["自己判断での返却の説明済","借用書の返却欄サイン確認"]
-  },
-  crutch_finish:{ title:"松葉杖：完了処理", badge:"松葉",
-    script:"返却処理を行います。",
-    choices:[{label:"戻る", next:"crutch_entry", style:""},{label:"ホームへ", next:"home", style:""}],
-    actions:["借用書持参を確認","使用日数を確認","当日会計と合算し使用料を頂く","返却後、記録を斜線","返却後の本紙をスキャン","終了"]
-  },
-
-  /* ===== 生保（既存） ===== */
-  seiho_entry:{ title:"生保（医療扶助）", badge:"生保",
-    script:"生活保護の医療扶助での受診ですね。\n医療券の状況はどれですか？",
-    choices:[
-      {label:"医療券あり", next:"seiho_have", style:"ok"},
-      {label:"医療券なし／電話確認まだ", next:"seiho_no", style:"danger"},
-      {label:"不明", next:"seiho_unknown", style:"warn"},
-      {label:"ホームへ", next:"home", style:""},
-    ]
-  },
-  seiho_have:{ title:"生保：医療券あり", badge:"生保",
-    script:"医療券を確認します。",
-    choices:[{label:"戻る", next:"seiho_entry", style:""},{label:"ホームへ", next:"home", style:""}],
-    actions:["有効期限確認","医療機関名（まさき整形外科）確認","傷病名確認","負担欄確認"]
-  },
-  seiho_no:{ title:"生保：医療扶助の確認が取れない", badge:"生保",
-    script:COMMON.seiho_no,
-    choices:[
-      {label:"10割いくら？（共通）", next:"tenwari_money", style:"primary"},
-      {label:"戻る", next:"seiho_entry", style:""},
-      {label:"ホームへ", next:"home", style:""},
-    ],
-    actions:[
-      "ケースワーカーへ連絡依頼を案内",
-      "医療扶助は電話確認が必要と説明",
-      "確認不可なら10割（自費）で受診可能と説明",
-      "10割の場合は当日支払いが必要と説明"
-    ]
-  },
-  seiho_unknown:{ title:"生保：不明", badge:"生保",
-    script:"担当のケースワーカーへ、当院で受診可能かご確認ください。\n市から当院へ電話確認が取れれば、生活保護（医療扶助）で受診可能です。\n\n電話確認が取れない場合は医療扶助としては受付できませんが、10割（自費扱い）であれば本日は受診できます。\n10割で受診される場合は当日のお支払いが必要になります。",
-    choices:[
-      {label:"10割いくら？（共通）", next:"tenwari_money", style:"primary"},
-      {label:"戻る", next:"seiho_entry", style:""},
-      {label:"ホームへ", next:"home", style:""}
-    ],
-    actions:[
-      "医療扶助は電話確認が必要と説明",
-      "確認不可なら10割（自費）で受診可能と説明",
-      "10割の場合は当日支払いが必要と説明"
+  // 会計・10割
+  tenwari_money: {
+    title: "10割負担のご案内",
+    badge: "共通",
+    script: "本日は10割負担でのお会計となります。\n目安は1万円〜1万5千円程度です。\n後日、書類や保険証をお持ちいただいた際に精算（返金）いたします。",
+    choices: [
+      { label: "了解（ホームへ）", next: "home", style: "primary" }
     ]
   },
 
-  /* ===== 通常（骨塩・採血を追加） ===== */
-  normal_entry:{ title:"通常（保険）", badge:"通常", script:"本日は初診ですか、再診ですか？", choices:[
-    {label:"初診", next:"normal_first", style:"primary"},
-    {label:"再診", next:"normal_return", style:"primary"},
-    {label:"ホームへ", next:"home", style:""},
-  ]},
-  normal_first:{ title:"初診", badge:"通常",
-    script:"初診の方は、問診票のご記入と資格確認をお願いします。",
-    choices:[
-      {label:"次へ（診察へ）", next:"normal_first_next", style:"primary"},
-      {label:"別部位（問診票）", next:"normal_other_site", style:"warn"},
-      {label:"戻る", next:"normal_entry", style:""},
-      {label:"ホームへ", next:"home", style:""},
-    ],
-    actions:["問診票の案内・回収","マイナ／保険証（資格確認）","スキャン・登録"]
-  },
-  normal_first_next:{ title:"初診：案内", badge:"通常", script:"診察からのご案内になります。", choices:[
-    {label:"戻る", next:"normal_first", style:""},{label:"ホームへ", next:"home", style:""}
-  ]},
-  normal_other_site:{ title:"別部位", badge:"通常", script:"別の部位の場合は、問診票が必要になります。", choices:[
-    {label:"戻る", next:"normal_first", style:""},{label:"ホームへ", next:"home", style:""}
-  ]},
-
-  normal_return:{ title:"再診", badge:"通常", script:"本日はどのような内容でしょうか？", choices:[
-    {label:"経過／診察", next:"nr_exam", style:"primary"},
-    {label:"薬の処方（診察必須）", next:"nr_drug", style:"primary"},
-    {label:"Dr注射（診察後）", next:"nr_dr_inj", style:"primary"},
-    {label:"骨塩（骨密度）", next:"nr_bone_entry", style:"primary"},
-    {label:"採血", next:"nr_blood", style:"primary"},
-    {label:"XP（レントゲン：診察必須）", next:"xp_entry", style:"primary"},
-    {label:"物療のみ（電気）", next:"nr_physio", style:"primary"},
-    {label:"運動リハのみ", next:"nr_rehab", style:"primary"},
-    {label:"混雑時ヘルプ（サンド）", next:"sand_help", style:"warn"},
-    {label:"戻る", next:"normal_entry", style:""},
-    {label:"ホームへ", next:"home", style:""},
-  ]},
-
-  nr_exam:{ title:"経過／診察", badge:"通常", script:"診察からのご案内になります。", choices:[
-    {label:"戻る", next:"normal_return", style:""},{label:"ホームへ", next:"home", style:""}
-  ]},
-  nr_drug:{ title:"薬の処方", badge:"通常", script:"お薬の処方は診察が必要になります。", choices:[
-    {label:"戻る", next:"normal_return", style:""},{label:"ホームへ", next:"home", style:""}
-  ]},
-  nr_dr_inj:{ title:"Dr注射", badge:"通常", script:"医師の診察後に注射となります。", choices:[
-    {label:"戻る", next:"normal_return", style:""},{label:"ホームへ", next:"home", style:""}
-  ]},
-
-  /* 骨塩：分岐 */
-  nr_bone_entry:{ title:"骨塩（骨密度）", badge:"通常", script:COMMON.bone_base + "\n\nどの部位ですか？", choices:[
-    {label:"前腕（当日）", next:"nr_bone_forearm", style:"ok"},
-    {label:"腰椎・大腿（当日以降）", next:"nr_bone_spinehip", style:"warn"},
-    {label:"結果を聞きたい（診察）", next:"bone_result_from_return", style:"primary"},
-    {label:"戻る", next:"normal_return", style:""},
-    {label:"ホームへ", next:"home", style:""},
-  ]},
-  nr_bone_forearm:{ title:"骨塩：前腕", badge:"通常", script:COMMON.bone_forearm, choices:[
-    {label:"戻る", next:"nr_bone_entry", style:""},
-    {label:"ホームへ", next:"home", style:""},
-  ], actions:["前腕＝当日で案内","骨塩へ案内"]},
-  nr_bone_spinehip:{ title:"骨塩：腰椎・大腿", badge:"通常", script:COMMON.bone_spine_hip, choices:[
-    {label:"戻る", next:"nr_bone_entry", style:""},
-    {label:"ホームへ", next:"home", style:""},
-  ], actions:["腰椎・大腿＝当日以降","検査日（予約/案内）を確認"]},
-  bone_result_from_return:{ title:"骨塩結果", badge:"通常", script:COMMON.bone_result, choices:[
-    {label:"戻る", next:"nr_bone_entry", style:""},
-    {label:"ホームへ", next:"home", style:""},
-  ], actions:["結果説明は診察で行う旨を説明","診察へ案内"]},
-
-  /* 採血 */
-  nr_blood:{ title:"採血", badge:"通常", script:COMMON.blood_draw, choices:[
-    {label:"結果を聞きたい（診察）", next:"blood_result_from_return", style:"primary"},
-    {label:"戻る", next:"normal_return", style:""},
-    {label:"ホームへ", next:"home", style:""},
-  ], actions:["採血へ案内"]},
-  blood_result_from_return:{ title:"採血結果", badge:"通常", script:COMMON.blood_result, choices:[
-    {label:"戻る", next:"normal_return", style:""},
-    {label:"ホームへ", next:"home", style:""},
-  ], actions:["結果説明は診察で行う旨を説明","診察へ案内"]},
-
-  nr_physio:{ title:"物療（電気）", badge:"通常",
-    script:"物療（電気）の指示が出ている場合、そのままご案内可能です。",
-    choices:[{label:"戻る", next:"normal_return", style:""},{label:"ホームへ", next:"home", style:""}],
-    actions:["カルテで物療の指示を確認"]
-  },
-  nr_rehab:{ title:"運動リハのみ", badge:"通常",
-    script:"予約時間に合わせてご案内します。",
-    choices:[{label:"戻る", next:"normal_return", style:""},{label:"ホームへ", next:"home", style:""}],
-    actions:["予約枠（20分）を確認"]
+  // 松葉杖
+  crutch_1: {
+    title: "松葉杖貸出",
+    badge: "松葉杖",
+    script: "松葉杖の貸出には「預かり金 5,000円」が必要です。\n返却時に全額お返しいたします。",
+    choices: [
+      { label: "貸出する", next: "home", style: "primary" },
+      { label: "ホームへ", next: "home", style: "" }
+    ]
   },
 
-  /* ===== 労災 / 事故 / 自費（既存） ===== */
-  rousai_1:{ title:"労災：入口確認", badge:"労災", script:"今回のケガは「お仕事中」または「通勤中」ですか？", choices:[
-    {label:"業務中", next:"rousai_10wari", style:"danger"},
-    {label:"通勤中", next:"rousai_10wari", style:"danger"},
-    {label:"ホームへ", next:"home", style:""},
-  ]},
-  rousai_10wari:{ title:"労災：10割（立替）", badge:"労災",
-    script:"必要書類をご提出いただくまでは、いったん10割でのお預かりになります。\n認定後に返金となります。",
-    choices:[{label:"10割いくら？", next:"tenwari_money", style:"primary"},{label:"戻る", next:"rousai_1", style:""},{label:"ホームへ", next:"home", style:""}]
+  // 書類
+  docs_entry: {
+    title: "書類・診断書",
+    badge: "書類",
+    script: "どのような書類が必要ですか？",
+    choices: [
+      { label: "警察用の診断書", next: "home", style: "primary" },
+      { label: "生命保険の診断書", next: "home", style: "primary" },
+      { label: "労災の書類提出", next: "home", style: "primary" },
+      { label: "戻る", next: "home", style: "" }
+    ]
   },
 
-  acc_entry:{ title:"交通事故・第三者", badge:"事故/第三者", script:"どのケースですか？", choices:[
-    {label:"交通事故（相手あり）", next:"acc_notyet", style:"primary"},
-    {label:"第三者行為", next:"third_10wari", style:"primary"},
-    {label:"ホームへ", next:"home", style:""},
-  ]},
-  acc_notyet:{ title:"事故：未連絡", badge:"事故/第三者",
-    script:"保険会社からの連絡が確認できるまでは、いったん10割でのお預かりになります。",
-    choices:[{label:"10割いくら？", next:"tenwari_money", style:"primary"},{label:"戻る", next:"acc_entry", style:""},{label:"ホームへ", next:"home", style:""}]
-  },
-  third_10wari:{ title:"第三者：10割", badge:"事故/第三者",
-    script:"健康保険が使用できない場合は、10割負担となります。\n内容により金額は変動します。",
-    choices:[{label:"10割いくら？", next:"tenwari_money", style:"primary"},{label:"戻る", next:"acc_entry", style:""},{label:"ホームへ", next:"home", style:""}]
-  },
+  /* ここに新しいガイドを追加していくことができます
+     例: mri_guide: { ... },
+  */
 
-  jihi_entry:{ title:"自費診療", badge:"自費", script:"自費診療をご希望ですか？", choices:[
-    {label:"白玉点滴", next:"jihi_common", style:"primary"},
-    {label:"美肌点滴", next:"jihi_common", style:"primary"},
-    {label:"その他自費", next:"jihi_common", style:"primary"},
-    {label:"ホームへ", next:"home", style:""},
-  ]},
-  jihi_common:{ title:"自費診療", badge:"自費", script:"自費診療となります。料金のご案内後に実施となります。", choices:[
-    {label:"金額（割り込み）", next:"money_hub", style:"warn"},
-    {label:"戻る", next:"jihi_entry", style:""},
-    {label:"ホームへ", next:"home", style:""},
-  ]},
 };
 
-/* ===== App state ===== */
+/* ==========================================
+   アプリケーション・ロジック (システム部分)
+   ========================================== */
+
 const state = { current:"home", history:[], memos:{} };
 const elScreen = document.getElementById("screen");
-const elAside  = document.getElementById("aside");
-const elChip   = document.getElementById("pathChip");
+const elAside = document.getElementById("aside");
+const elChip = document.getElementById("pathChip");
 
-/* ===== Modal ===== */
-function openModal(title, text){
+function go(nextId) {
+  if(!FLOW[nextId]) return;
+  state.history.push(state.current);
+  state.current = nextId;
+  render();
+}
+
+function jump(nextId) {
+  state.history = [];
+  state.current = nextId;
+  render();
+}
+
+function back() {
+  if(state.history.length > 0) {
+    state.current = state.history.pop();
+    render();
+  } else {
+    state.current = "home";
+    render();
+  }
+}
+
+function resetSession() {
+  state.history = [];
+  state.current = "home";
+  render();
+}
+
+function openModal(title, text) {
   document.getElementById("modalTitle").textContent = title;
-  document.getElementById("modalText").textContent  = text;
+  document.getElementById("modalText").textContent = text;
   document.getElementById("modalBack").style.display = "flex";
 }
-function closeModal(){ document.getElementById("modalBack").style.display = "none"; }
-document.getElementById("closeModal").addEventListener("click", closeModal);
-document.getElementById("modalBack").addEventListener("click", (e)=>{ if(e.target.id==="modalBack") closeModal(); });
 
-/* ===== Navigation ===== */
-function setChip(text){ elChip.textContent = text; }
-function go(nextId){
-  if(nextId==="__BACK__"){ back(); return; }
-  if(!FLOW[nextId]) return;
-  state.history.push(state.current);
-  state.current = nextId;
-  render();
-}
-function jump(nextId){
-  if(!FLOW[nextId]) return;
-  state.history.push(state.current);
-  state.current = nextId;
-  render();
-}
-function back(){
-  if(state.history.length===0){ state.current="home"; render(); return; }
-  state.current = state.history.pop();
-  render();
-}
+document.getElementById("closeModal").addEventListener("click", () => {
+  document.getElementById("modalBack").style.display = "none";
+});
 
-/* ===== Local save ===== */
-function toggleCheck(key, val){ state.memos[key] = val ? "1" : ""; persist(); }
-function persist(){ try{ localStorage.setItem("masaki_os_state_v034", JSON.stringify({memos:state.memos})); }catch{} }
-function restore(){
-  try{
-    const raw = localStorage.getItem("masaki_os_state_v034");
-    if(!raw) return;
-    const obj = JSON.parse(raw);
-    if(obj?.memos) state.memos = obj.memos;
-  }catch{}
-}
-function resetSession(){ state.history=[]; state.memos={}; persist(); state.current="home"; render(); }
-
-/* ===== Helpers ===== */
-function escapeHtml(str){
-  return String(str).replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;")
-    .replaceAll('"',"&quot;").replaceAll("'","&#039;");
-}
-function escapeJs(str){
-  return String(str).replaceAll("\\","\\\\").replaceAll("'","\\'").replaceAll("\n","\\n").replaceAll("\r","");
-}
-function badgeClass(b){
-  if(!b) return "";
-  if(b==="労災") return "red";
-  if(b==="待ち") return "amber";
-  if(b==="自費") return "green";
-  if(b==="通常") return "blue";
-  if(b==="事故/第三者") return "red";
-  if(b==="共通") return "amber";
-  if(b==="書類") return "red";
-  if(b==="松葉") return "blue";
-  if(b==="生保") return "green";
-  return "blue";
-}
-
-function setDockActive(){
-  ["dockHome","dockDocs","dockMoney","dockCrutch","dockSeiho"].forEach(id=>document.getElementById(id).classList.remove("active"));
-  const c = state.current;
-  if(c==="home") document.getElementById("dockHome").classList.add("active");
-  else if(c.startsWith("docs_")) document.getElementById("dockDocs").classList.add("active");
-  else if(c.startsWith("money_") || c==="tenwari_money") document.getElementById("dockMoney").classList.add("active");
-  else if(c.startsWith("crutch_")) document.getElementById("dockCrutch").classList.add("active");
-  else if(c.startsWith("seiho_")) document.getElementById("dockSeiho").classList.add("active");
-}
-
-function renderAside(){
-  const btns = GLOBAL_DETAILS.map(d =>
-    `<button class="small" onclick="openModal('${escapeJs(d.label)}','${escapeJs(d.text)}')"
-      ontouchstart="openModal('${escapeJs(d.label)}','${escapeJs(d.text)}')">${escapeHtml(d.label)}</button>`
-  ).join("");
-
-  elAside.innerHTML = `
-    <div class="sectionTitle">詳細（右に常駐）</div>
-    <div class="detailBtns">${btns}</div>
-    <div class="sep"></div>
-    <div class="sectionTitle">即答テンプレ（短文）</div>
-    <div class="mini">■ 骨塩\n「前腕は当日。腰椎・大腿は当日以降。結果は診察で説明します。」\n\n■ 採血\n「結果は診察で説明します。」\n\n■ MRI\n「予約は別iPadで取ります。希望日を伺います。」\n\n■ 書類（労災/自賠責）\n「提出先・書式・期限の3点を確認します。」</div>
-  `;
-}
-
-function render(){
+function render() {
   const s = FLOW[state.current];
-  const chain = [s.badge || "OS", s.title].filter(Boolean).join(" / ");
-  setChip(state.current==="home" ? "HOME" : chain);
+  elChip.textContent = s.title;
 
-  const parts = [];
-  parts.push(`
-    <div class="row" style="justify-content: space-between; align-items:flex-start; gap:10px;">
-      <div>
-        <div class="sectionTitle">${escapeHtml(s.title || "")}</div>
-        ${s.badge ? `<span class="badge ${badgeClass(s.badge)}">${escapeHtml(s.badge)}</span>` : ""}
-      </div>
-      <div class="footerRow">
-        <button class="small" onclick="back()" ontouchstart="back()">戻る</button>
-      </div>
+  // メイン画面の描画
+  let html = `
+    <div class="row" style="justify-content:space-between">
+      <div class="sectionTitle">${s.badge ? `<span class="badge ${getBadgeClass(s.badge)}">${s.badge}</span>` : ""} ${s.title}</div>
+      <button class="small" onclick="back()">戻る</button>
     </div>
-  `);
+    <div class="script">${s.script}</div>
+    <div class="btnGrid">
+  `;
 
-  parts.push(`<div class="sep"></div>`);
+  s.choices.forEach(c => {
+    html += `<button class="${c.style}" onclick="go('${c.next}')">${c.label}</button>`;
+  });
 
-  parts.push(`
-    <details class="accordion" style="display:block; margin-bottom:10px;">
-      <summary>詳細（ここをタップで開く）</summary>
-      <div class="hint" style="margin-top:8px;">※PC/横幅があると右側に常時表示されます。</div>
-      <div class="detailBtns">
-        ${GLOBAL_DETAILS.map(d =>
-          `<button class="small" onclick="openModal('${escapeJs(d.label)}','${escapeJs(d.text)}')"
-            ontouchstart="openModal('${escapeJs(d.label)}','${escapeJs(d.text)}')">${escapeHtml(d.label)}</button>`
-        ).join("")}
-      </div>
-    </details>
-  `);
+  html += `</div>`;
+  elScreen.innerHTML = html;
 
-  parts.push(`<div class="script">${escapeHtml(s.script || "")}</div>`);
-  if(s.hint) parts.push(`<div class="hint">${escapeHtml(s.hint)}</div>`);
-
-  if(s.choices?.length){
-    parts.push(`<div class="btnGrid">${
-      s.choices.map(c =>
-        `<button class="${(c.style||"").trim()}" onclick="go('${c.next}')" ontouchstart="go('${c.next}')">${escapeHtml(c.label)}</button>`
-      ).join("")
-    }</div>`);
-  }
-
-  if(s.actions?.length){
-    parts.push(`<div class="sectionTitle">受付チェック（内部用）</div>`);
-    parts.push(`<div class="actions">${
-      s.actions.map((a, idx)=>{
-        const key = `${state.current}__act__${idx}`;
-        return `
-          <label class="check">
-            <input type="checkbox"
-              onchange="toggleCheck('${key}', this.checked)"
-              ${state.memos[key] ? "checked" : ""}/>
-            <div>${escapeHtml(a)}</div>
-          </label>
-        `;
-      }).join("")
-    }</div>`);
-  }
-
-  parts.push(`<div class="sep"></div>`);
-  parts.push(`
-    <div class="footerRow">
-      <button class="small grow" onclick="go('home')" ontouchstart="go('home')">ホーム</button>
-      <button class="small grow" onclick="resetSession()" ontouchstart="resetSession()">セッション初期化</button>
-    </div>
-    <div class="hint">※「セッション初期化」：履歴・チェックを消して最初から。</div>
-  `);
-
-  elScreen.innerHTML = parts.join("");
+  // サイドバー（詳細ボタン）の描画
   renderAside();
-  setDockActive();
+  
+  // ドックのアクティブ状態
+  updateDock();
 }
 
-/* expose */
-window.go = go;
-window.jump = jump;
-window.back = back;
-window.openModal = openModal;
-window.toggleCheck = toggleCheck;
-window.resetSession = resetSession;
+function renderAside() {
+  let html = `<div class="sectionTitle">クイック詳細確認</div><div style="display:grid; gap:10px;">`;
+  GLOBAL_DETAILS.forEach(d => {
+    html += `<button class="small" onclick="openModal('${d.label}','${d.text.replace(/\n/g,'\\n')}')">${d.label}</button>`;
+  });
+  html += `</div>`;
+  elAside.innerHTML = html;
+}
 
-/* init */
-restore();
+function getBadgeClass(b) {
+  if(b==="労災" || b==="書類") return "red";
+  if(b==="通常") return "blue";
+  if(b==="自費") return "green";
+  return "amber";
+}
+
+function updateDock() {
+  document.querySelectorAll('.dockItem').forEach(el => el.classList.remove('active'));
+  if(state.current === "home") document.getElementById("dockHome").classList.add("active");
+}
+
+// 初回起動
 render();
 </script>
+
 </body>
 </html>
