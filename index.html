@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>まさき整形 受付対応OS（v0.3.6 完全復活版）</title>
+  <title>まさき整形OS（v0.3.8 項目整理版）</title>
   
   <meta name="theme-color" content="#0b0c10">
   <meta name="mobile-web-app-capable" content="yes">
@@ -13,7 +13,7 @@
     :root {
       --bg:#0b0c10; --card:#11131a; --text:#f3f4f6; --muted:#a7b0be; --border:#1f2937;
       --blue:#60a5fa; --red:#f87171; --green:#34d399; --amber:#fbbf24;
-      --dockH:92px;
+      --dockH:96px;
       --fw-title:800; --fw-btn:800; --fw-script:800; --fw-sub:700;
     }
     * { box-sizing:border-box; -webkit-touch-callout:none; }
@@ -27,29 +27,30 @@
     }
     header { position:sticky; top:0; z-index:10; backdrop-filter:blur(10px); background:rgba(11,12,16,.85); border-bottom:1px solid var(--border); padding:16px 14px; }
     .row { display:flex; gap:12px; align-items:center; }
-    .title { font-size:18px; font-weight:var(--fw-title); }
+    .title { font-size:18px; font-weight:var(--fw-title); color:var(--blue); }
     .chip { font-size:13px; color:var(--muted); border:1px solid var(--border); padding:4px 10px; border-radius:999px; }
     main { padding:20px 14px 40px; max-width:1400px; margin: 0 auto; }
     .layout { display:grid; gap:16px; grid-template-columns: 1fr; align-items:start; }
     @media(min-width:1000px){ .layout { grid-template-columns: 1fr 380px; } .asideSticky { position:sticky; top:90px; } }
-    .card { background:rgba(17,19,26,.95); border:1px solid var(--border); border-radius:20px; padding:20px; box-shadow:0 15px 35px rgba(0,0,0,.4); }
-    .sectionTitle { font-size:14px; font-weight:var(--fw-sub); color:var(--muted); margin-bottom:10px; }
-    .script { font-size:32px; line-height:1.45; font-weight:var(--fw-script); padding:20px; border-radius:18px; border:1px solid rgba(96,165,250,.3); background:rgba(96,165,250,.08); white-space:pre-wrap; margin-bottom: 20px; }
-    .btnGrid { display:grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap:12px; margin-top:20px; }
-    button { appearance:none; border:none; border-radius:14px; padding:24px 16px; font-size:22px; font-weight:var(--fw-btn); background:var(--card); color:var(--text); border:1px solid var(--border); cursor:pointer; }
-    button:active { transform: scale(0.97); background: var(--border); }
+    .card { background:rgba(17,19,26,.95); border:1px solid var(--border); border-radius:24px; padding:24px; box-shadow:0 20px 40px rgba(0,0,0,.5); }
+    .sectionTitle { font-size:14px; font-weight:var(--fw-sub); color:var(--muted); margin-bottom:10px; text-transform:uppercase; letter-spacing:1px; }
+    .script { font-size:32px; line-height:1.45; font-weight:var(--fw-script); padding:24px; border-radius:20px; border:1px solid rgba(96,165,250,.3); background:rgba(96,165,250,.08); white-space:pre-wrap; margin-bottom: 24px; color:#fff; }
+    .btnGrid { display:grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap:14px; margin-top:20px; }
+    button { appearance:none; border:none; border-radius:16px; padding:26px 16px; font-size:24px; font-weight:var(--fw-btn); background:var(--card); color:var(--text); border:1px solid var(--border); cursor:pointer; display:flex; align-items:center; justify-content:center; text-align:center; }
+    button:active { transform: scale(0.96); background: var(--border); }
     button.primary { background: var(--blue); color: #000; border:none; }
     button.danger { background: var(--red); color: #000; border:none; }
     button.warn { background: var(--amber); color: #000; border:none; }
-    button.small { padding:12px 16px; font-size:16px; border-radius:10px; }
-    .dock { position:fixed; bottom:0; left:0; right:0; height:var(--dockH); background:rgba(11,12,16,.9); border-top:1px solid var(--border); display:flex; justify-content:space-around; align-items:center; padding-bottom: env(safe-area-inset-bottom); backdrop-filter:blur(15px); }
-    .dockItem { flex:1; text-align:center; color:var(--muted); font-size:13px; font-weight:700; display:flex; flex-direction:column; gap:4px; text-decoration:none; }
+    button.green { background: var(--green); color: #000; border:none; }
+    button.small { padding:14px 18px; font-size:16px; border-radius:12px; font-weight:700; }
+    .dock { position:fixed; bottom:0; left:0; right:0; height:var(--dockH); background:rgba(11,12,16,.92); border-top:1px solid var(--border); display:flex; justify-content:space-around; align-items:center; padding-bottom: env(safe-area-inset-bottom); backdrop-filter:blur(20px); z-index:50; }
+    .dockItem { flex:1; text-align:center; color:var(--muted); font-size:13px; font-weight:700; display:flex; flex-direction:column; gap:6px; text-decoration:none; }
     .dockItem.active { color:var(--blue); }
-    .icon { font-size:26px; }
-    .modalOverlay { position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,.8); display:none; align-items:center; justify-content:center; z-index:100; padding:20px; }
-    .modal { background:var(--card); border:1px solid var(--border); border-radius:24px; padding:24px; width:100%; max-width:600px; }
-    .modalText { font-size:20px; line-height:1.6; white-space:pre-wrap; margin:20px 0; }
-    .badge { display:inline-block; padding:4px 10px; border-radius:6px; font-size:12px; font-weight:800; margin-bottom:8px; }
+    .icon { font-size:28px; }
+    .modalOverlay { position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,.85); display:none; align-items:center; justify-content:center; z-index:100; padding:20px; backdrop-filter:blur(4px); }
+    .modal { background:var(--card); border:1px solid var(--border); border-radius:28px; padding:30px; width:100%; max-width:640px; box-shadow:0 30px 60px rgba(0,0,0,.8); }
+    .modalText { font-size:22px; line-height:1.6; white-space:pre-wrap; margin:24px 0; color:#fff; }
+    .badge { display:inline-block; padding:5px 12px; border-radius:8px; font-size:13px; font-weight:900; margin-bottom:10px; }
     .badge.red { background:var(--red); color:#000; }
     .badge.blue { background:var(--blue); color:#000; }
     .badge.green { background:var(--green); color:#000; }
@@ -60,9 +61,9 @@
 
 <header>
   <div class="row">
-    <div class="title">まさき整形OS</div>
+    <div class="title">まさき整形OS v0.3.8</div>
     <div class="chip" id="pathChip">HOME</div>
-    <button class="small" style="margin-left:auto" onclick="location.reload(true)">更新</button>
+    <button class="small" style="margin-left:auto; background:var(--border);" onclick="location.reload(true)">更新</button>
   </div>
 </header>
 
@@ -82,40 +83,43 @@
 
 <div id="modalBack" class="modalOverlay">
   <div class="modal">
-    <div id="modalTitle" class="sectionTitle">詳細</div>
+    <div id="modalTitle" class="sectionTitle" style="color:var(--blue)">詳細</div>
     <div id="modalText" class="modalText"></div>
-    <button class="primary" style="width:100%; padding:20px;" id="closeModal">閉じる</button>
+    <button class="primary" style="width:100%; padding:22px;" id="closeModal">閉じる</button>
   </div>
 </div>
 
 <script>
 const GLOBAL_DETAILS = [
-  { label:"10割目安", text:"初診：約10,000円〜15,000円\n再診：約3,000円〜5,000円\n※処置や検査により変動します。" },
-  { label:"労災書類", text:"・業務災害：様式第5号\n・通勤災害：様式第16号の3\n・転院：様式第6号 / 16号の4" },
-  { label:"診断書期間", text:"通常、診察日から1ヶ月程度の期間で作成。\n警察提出用などは当日発行可能です。" },
-  { label:"松葉杖", text:"預かり金 5,000円（非課税）\n返却時に領収書と引き換えで全額返金。" }
+  { label:"10割目安", text:"【初診】約10,000円〜15,000円\n【再診】約3,000円〜5,000円\n※処置や検査（レントゲン枚数等）で変動します。" },
+  { label:"労災必要書類", text:"・業務災害：様式第5号\n・通勤災害：様式第16号の3\n・転院：様式第6号 / 16号の4\n※会社印が必須です。" },
+  { label:"診断書（警察）", text:"当日発行可（3,300円）。\n事故現場の状況や痛みの部位を確認してください。" },
+  { label:"松葉杖貸出", text:"預かり金 5,000円（現金のみ）\n返却時に「預かり証」と引き換えで全額返金します。" }
 ];
 
 const FLOW = {
   home: {
-    title: "受付メイン", script: "本日はどうなさいましたか？",
+    title: "メインメニュー", script: "お疲れ様です。本日はどうなさいましたか？",
     choices: [
       { label: "通常（保険証あり）", next: "normal_entry", style: "primary" },
       { label: "労災・通勤災害", next: "rousai_1", style: "danger" },
       { label: "交通事故・第三者", next: "acc_entry", style: "danger" },
-      { label: "自費（点滴・美容）", next: "jihi_entry", style: "green" },
+      { label: "自費点滴（白玉等）", next: "jihi_entry", style: "green" },
       { label: "書類のみ・診断書", next: "docs_entry", style: "" }
     ]
   },
+  // 通常
   normal_entry: {
     title: "通常受付", badge: "通常", script: "保険証（またはマイナカード）はお持ちですか？",
     choices: [
-      { label: "はい", next: "home", style: "primary" },
-      { label: "忘れた（10割預かり）", next: "tenwari_money", style: "warn" }
+      { label: "はい（確認OK）", next: "home", style: "primary" },
+      { label: "忘れた（10割預かり）", next: "tenwari_money", style: "warn" },
+      { label: "住所等変更あり", next: "home", style: "" }
     ]
   },
+  // 労災
   rousai_1: {
-    title: "労災：入口", badge: "労災", script: "今回のケガは「お仕事中」または「通勤中」ですか？",
+    title: "労災：入口確認", badge: "労災", script: "お怪我は「お仕事中」または「通勤中」ですか？",
     choices: [
       { label: "業務中", next: "rousai_10wari", style: "danger" },
       { label: "通勤中", next: "rousai_10wari", style: "danger" },
@@ -123,72 +127,102 @@ const FLOW = {
     ]
   },
   rousai_10wari: {
-    title: "労災：10割", badge: "労災", script: "会社から書類が届くまでは、いったん10割でお預かりになります。\n認定後に返金となります。",
+    title: "労災：10割預かり", badge: "労災", script: "書類（5号等）が届くまでは、一旦10割でお預かりとなります。\n書類提出後に返金いたします。",
     choices: [
-      { label: "10割いくら？", next: "tenwari_money", style: "primary" },
-      { label: "ホームへ", next: "home", style: "" }
+      { label: "10割案内へ", next: "tenwari_money", style: "primary" },
+      { label: "書類を持っている", next: "rousai_have_docs", style: "green" },
+      { label: "戻る", next: "rousai_1", style: "" }
     ]
   },
+  rousai_have_docs: {
+    title: "労災：書類あり", badge: "労災", script: "書類（5号または16号の3）をお預かりします。\n本日のお会計は発生しません。",
+    choices: [ { label: "了解", next: "home", style: "primary" } ]
+  },
+  // 事故
   acc_entry: {
-    title: "事故・第三者", badge: "事故", script: "どちらのケースですか？",
+    title: "事故・第三者", badge: "事故/第三者", script: "どのケースですか？",
     choices: [
       { label: "交通事故（相手あり）", next: "acc_notyet", style: "primary" },
       { label: "第三者行為（喧嘩等）", next: "third_10wari", style: "primary" },
+      { label: "自損事故（自分のみ）", next: "home", style: "" },
       { label: "ホームへ", next: "home", style: "" }
     ]
   },
   acc_notyet: {
-    title: "事故：未連絡", badge: "事故", script: "保険会社から当院へ連絡があるまでは、いったん10割でお預かりとなります。",
+    title: "事故：未連絡", badge: "事故/第三者", script: "保険会社から当院へ連絡は届いていますか？",
     choices: [
-      { label: "10割いくら？", next: "tenwari_money", style: "primary" },
-      { label: "ホームへ", next: "home", style: "" }
+      { label: "届いている", next: "home", style: "green" },
+      { label: "まだ（10割預かり）", next: "acc_10wari_info", style: "warn" }
     ]
   },
-  third_10wari: {
-    title: "第三者：10割", badge: "事故", script: "健康保険が使用できないため、基本10割負担となります。",
-    choices: [ { label: "了解", next: "tenwari_money", style: "primary" } ]
+  acc_10wari_info: {
+    title: "事故：10割預かり", badge: "事故/第三者", script: "連絡が確認できるまでは、一旦10割でお預かりとなります。\n後日、連絡があれば精算いたします。",
+    choices: [ { label: "10割案内へ", next: "tenwari_money", style: "primary" } ]
   },
+  third_10wari: {
+    title: "第三者：案内", badge: "事故/第三者", script: "第三者行為は健康保険が使えません。\n原則10割負担となります。",
+    choices: [ { label: "了解（10割案内）", next: "tenwari_money", style: "primary" } ]
+  },
+  // 自費
   jihi_entry: {
-    title: "自費診療", badge: "自費", script: "ご希望の項目を選択してください",
+    title: "自費診療", badge: "自費", script: "ご希望のメニューを選択してください",
     choices: [
       { label: "白玉点滴", next: "jihi_common", style: "primary" },
       { label: "美肌点滴", next: "jihi_common", style: "primary" },
-      { label: "その他自費", next: "jihi_common", style: "primary" },
+      { label: "ニンニク点滴", next: "jihi_common", style: "primary" },
+      { label: "その他自費メニュー", next: "jihi_common", style: "" },
       { label: "ホームへ", next: "home", style: "" }
     ]
   },
   jihi_common: {
-    title: "自費案内", badge: "自費", script: "自費診療となります。料金案内後に実施いたします。",
-    choices: [ { label: "金額を確認", next: "money_hub", style: "warn" }, { label: "ホームへ", next: "home", style: "" } ]
+    title: "自費：確認", badge: "自費", script: "自費診療となります。料金を確認し、同意書にサインをお願いします。",
+    choices: [
+      { label: "料金を確認", next: "money_hub", style: "warn" },
+      { label: "サイン完了", next: "home", style: "primary" }
+    ]
   },
+  // 会計
   tenwari_money: {
-    title: "10割会計", badge: "共通", script: "本日は10割でお預かりします。\n目安：10,000円〜15,000円程度\n\n後日、書類と領収書をお持ちいただければ精算いたします。",
-    choices: [ { label: "了解", next: "home", style: "primary" } ]
+    title: "10割負担の目安", badge: "共通", script: "本日は全額自己負担でお預かりします。\n【初診目安：10,000円〜15,000円】\n\n後日、精算いたします。",
+    choices: [ { label: "了解しました", next: "home", style: "primary" } ]
   },
   money_hub: {
-    title: "会計確認", badge: "共通", script: "どのお会計を確認しますか？",
+    title: "会計・料金確認", badge: "共通", script: "確認したい項目を選んでください",
     choices: [
       { label: "10割の目安", next: "tenwari_money", style: "primary" },
-      { label: "診断書の料金", next: "docs_entry", style: "" },
+      { label: "松葉杖（5,000円）", next: "crutch_1", style: "primary" },
+      { label: "診断書（3,300円〜）", next: "docs_entry", style: "" },
       { label: "ホームへ", next: "home", style: "" }
     ]
   },
+  // 書類
   docs_entry: {
-    title: "書類関連", badge: "書類", script: "必要書類を選択してください",
+    title: "書類・診断書", badge: "書類", script: "どの書類のご案内ですか？",
     choices: [
-      { label: "警察提出用（診断書）", next: "home", style: "primary" },
-      { label: "生命保険（診断書）", next: "home", style: "primary" },
-      { label: "労災の書類を出す", next: "home", style: "primary" },
+      { label: "警察提出用（事故）", next: "docs_keisatsu", style: "primary" },
+      { label: "生命保険（診断書）", next: "docs_seiho", style: "primary" },
       { label: "ホームへ", next: "home", style: "" }
     ]
   },
+  docs_keisatsu: {
+    title: "警察用診断書", badge: "書類", script: "警察提出用の診断書ですね。費用は3,300円となります。",
+    choices: [ { label: "発行依頼", next: "home", style: "primary" } ]
+  },
+  docs_seiho: {
+    title: "生命保険診断書", badge: "書類", script: "指定の用紙をお持ちですか？作成に1〜2週間かかります。",
+    choices: [
+      { label: "用紙あり（預かり）", next: "home", style: "primary" },
+      { label: "用紙なし", next: "home", style: "" }
+    ]
+  },
+  // 松葉杖
   crutch_1: {
-    title: "松葉杖", badge: "松葉杖", script: "貸出には預かり金5,000円が必要です。\n返却時に全額返金されますが、領収書を失くさないようご注意ください。",
+    title: "松葉杖貸出", badge: "松葉杖", script: "預かり金5,000円が必要です。\n返却時に全額返金します。",
     choices: [ { label: "了解", next: "home", style: "primary" } ]
   }
 };
 
-const state = { current:"home", history:[] };
+let state = { current:"home", history:[] };
 const elScreen = document.getElementById("screen");
 const elAside = document.getElementById("aside");
 const elChip = document.getElementById("pathChip");
@@ -205,6 +239,7 @@ function back() {
   else { state.current = "home"; render(); }
 }
 function resetSession() { state.history = []; state.current = "home"; render(); }
+
 function openModal(title, text) {
   document.getElementById("modalTitle").textContent = title;
   document.getElementById("modalText").textContent = text;
@@ -213,13 +248,14 @@ function openModal(title, text) {
 document.getElementById("closeModal").addEventListener("click", () => {
   document.getElementById("modalBack").style.display = "none";
 });
+
 function render() {
   const s = FLOW[state.current];
   elChip.textContent = s.title;
   let html = `
-    <div class="row" style="justify-content:space-between">
+    <div class="row" style="justify-content:space-between; margin-bottom:10px;">
       <div>${s.badge ? `<span class="badge ${getBadgeClass(s.badge)}">${s.badge}</span>` : ""}</div>
-      <button class="small" onclick="back()">戻る</button>
+      <button class="small" style="background:var(--border)" onclick="back()">戻る</button>
     </div>
     <div class="script">${s.script}</div>
     <div class="btnGrid">
@@ -232,27 +268,32 @@ function render() {
   renderAside();
   updateDock();
 }
+
 function renderAside() {
-  let html = `<div class="sectionTitle">クイック詳細</div><div style="display:grid; gap:12px;">`;
+  let html = `<div class="sectionTitle">QUICK REFERENCE</div><div style="display:grid; gap:14px;">`;
   GLOBAL_DETAILS.forEach(d => {
     html += `<button class="small" onclick="openModal('${d.label}','${d.text.replace(/\n/g,'\\n')}')">${d.label}</button>`;
   });
   html += `</div>`;
   elAside.innerHTML = html;
 }
+
 function getBadgeClass(b) {
-  if(b==="労災" || b==="書類") return "red";
+  if(b.includes("労災") || b.includes("事故") || b.includes("書類")) return "red";
   if(b==="通常") return "blue";
   if(b==="自費") return "green";
   return "amber";
 }
+
 function updateDock() {
   document.querySelectorAll('.dockItem').forEach(el => el.classList.remove('active'));
-  if(state.current === "home") document.getElementById("dockHome").classList.add("active");
-  else if(state.current.includes("docs")) document.getElementById("dockDocs").classList.add("active");
-  else if(state.current.includes("money")) document.getElementById("dockMoney").classList.add("active");
-  else if(state.current.includes("crutch")) document.getElementById("dockCrutch").classList.add("active");
+  const c = state.current;
+  if(c === "home") document.getElementById("dockHome").classList.add("active");
+  else if(c.includes("docs")) document.getElementById("dockDocs").classList.add("active");
+  else if(c.includes("money") || c.includes("tenwari")) document.getElementById("dockMoney").classList.add("active");
+  else if(c.includes("crutch")) document.getElementById("dockCrutch").classList.add("active");
 }
+
 render();
 </script>
 </body>
