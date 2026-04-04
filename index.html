@@ -3,218 +3,174 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>まさき整形 受付対応OS v0.3.6</title>
+<title>受付OS v0.3.7</title>
 
 <style>
-:root{
---bg:#0f172a;
---panel:#111827;
---card:#1e293b;
---border:#243244;
---text:#f8fafc;
---muted:#a7b0be;
---blue:#38bdf8;
---green:#34d399;
---amber:#fbbf24;
---red:#f87171;
---radius:16px;
-}
-
 body{
 margin:0;
-font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue","Noto Sans JP";
-background:var(--bg);
-color:var(--text);
-overflow:hidden;
+font-family:-apple-system,BlinkMacSystemFont;
+background:#0f172a;
+color:white;
 }
 
 header{
-height:60px;
+padding:15px;
+background:#111827;
 display:flex;
-align-items:center;
 justify-content:space-between;
-padding:0 20px;
-background:var(--panel);
-border-bottom:1px solid var(--border);
-font-weight:700;
-}
-
-.path{
-font-size:12px;
-color:var(--muted);
-}
-
-.layout{
-display:flex;
-height:calc(100vh - 60px);
 }
 
 .menu{
-width:40%;
-padding:16px;
+width:35%;
+float:left;
+height:calc(100vh - 50px);
 overflow:auto;
-border-right:1px solid var(--border);
+border-right:1px solid #333;
+padding:10px;
 }
 
-.menu button{
+.detail{
+width:65%;
+float:left;
+padding:20px;
+}
+
+button{
 width:100%;
 margin-bottom:10px;
-padding:16px;
+padding:15px;
 border:none;
-border-radius:var(--radius);
-background:var(--card);
+border-radius:10px;
+background:#1e293b;
 color:white;
-font-weight:700;
 font-size:16px;
 }
 
-.menu button.danger{outline:2px solid var(--red);}
-.menu button.ok{outline:2px solid var(--green);}
-.menu button.warn{outline:2px solid var(--amber);}
-
-.detail{
-flex:1;
-padding:20px;
-overflow:auto;
-}
+.danger{outline:2px solid #f87171;}
+.ok{outline:2px solid #34d399;}
+.warn{outline:2px solid #fbbf24;}
 
 .script{
 background:#020617;
 padding:20px;
-border-radius:16px;
-font-size:20px;
 margin-bottom:15px;
+border-radius:12px;
 white-space:pre-line;
+font-size:18px;
 }
 
 .check{
 background:#020617;
-padding:12px;
-margin-bottom:8px;
-border-radius:10px;
+padding:10px;
+margin-bottom:6px;
+border-radius:8px;
 }
-
 </style>
 </head>
 
 <body>
 
 <header>
-<div>受付OS v0.3.6</div>
-<div class="path" id="path">HOME</div>
+<div>受付OS v0.3.7</div>
+<div id="path">HOME</div>
 </header>
 
-<div class="layout">
-
 <div class="menu" id="menu"></div>
-
 <div class="detail" id="detail"></div>
-
-</div>
 
 <script>
 
-const MENU = [
+const MENU=[
 { id:"home", label:"ホーム"},
-{ id:"return", label:"再診"},
-{ id:"money", label:"金額説明", style:"warn"},
-{ id:"docs", label:"書類", style:"danger"}
+{ id:"crutch", label:"松葉杖"}
 ];
 
-const SCREENS = {
+const SCREENS={
 
 home:{
-title:"選択してください",
+title:"選択",
 script:"左から選択",
 path:"HOME"
 },
 
-return:{
-title:"再診",
-script:"本日はどの内容ですか？",
-path:"再診",
+crutch:{
+title:"松葉杖",
+script:"どちらですか？",
+path:"松葉杖",
 buttons:[
-{id:"drug",label:"薬（診察必須）",style:"danger"},
-{id:"xp",label:"XP（診察必須）",style:"danger"},
-{id:"physio",label:"物療のみ",style:"ok"}
+{id:"crutch_lend",label:"貸出"},
+{id:"crutch_return",label:"返却"}
 ]
 },
 
-drug:{
-title:"薬処方",
-script:"薬の処方は診察が必要です\n※処方権限は医師のみ",
-path:"再診 > 薬"
+/* ===== 貸出 ===== */
+
+crutch_lend:{
+title:"松葉杖 貸出",
+path:"松葉杖 > 貸出",
+script:"診察後に貸出を行います",
+checks:[
+"診察へ案内（医師判断）",
+"リハビリ室から貸出確認・借用書受取",
+"借用書記入（本紙＋控え）",
+"預かり金5,000円説明・受領",
+"白金庫へ保管（ID＋杖番号記入）",
+"控えを患者へ渡す",
+"カルテ記録（貸出日・本数・杖番号）"
+]
 },
 
-xp:{
-title:"XP",
-script:"レントゲンは診察が必要です\n※撮影指示は医師のみ",
-path:"再診 > XP"
-},
+/* ===== 返却 ===== */
 
-physio:{
-title:"物療",
-script:"物療は指示があればそのまま案内可能",
-path:"再診 > 物療"
-},
-
-money:{
-title:"金額説明",
-script:"診療は点数制です\n内容により変わります",
-path:"金額説明",
-detail:`
-例：
-診察のみ → 数千円
-レントゲン → 5000〜10000円
-処置あり → 変動
-`
-},
-
-docs:{
-title:"書類",
-script:"2〜3週間かかります",
-path:"書類"
+crutch_return:{
+title:"松葉杖 返却",
+path:"松葉杖 > 返却",
+script:"返却処理を行います",
+checks:[
+"診察有無確認（原則：診察後返却）",
+"借用書控え確認（無ければ本書にサイン・日付印／使用日数記入）",
+"杖番号確認（現物一致）",
+"使用日数確認",
+"使用料計算（カルテ＋Excel／自費精算）",
+"預かり金返金処理",
+"書類スキャン",
+"カルテ記録（返却日・杖番号・精算済）"
+]
 }
 
 };
 
-let current="home";
-
 function renderMenu(){
-const el=document.getElementById("menu");
-el.innerHTML="";
-MENU.forEach(m=>{
-const b=document.createElement("button");
-b.innerText=m.label;
-if(m.style) b.classList.add(m.style);
-b.onclick=()=>render(m.id);
-el.appendChild(b);
+let m=document.getElementById("menu");
+m.innerHTML="";
+MENU.forEach(i=>{
+let b=document.createElement("button");
+b.innerText=i.label;
+b.onclick=()=>render(i.id);
+m.appendChild(b);
 });
 }
 
 function render(id){
-
-// チェックリセット（今回の改善）
-document.querySelectorAll("input[type=checkbox]").forEach(e=>e.checked=false);
-
-current=id;
-const s=SCREENS[id];
+let s=SCREENS[id];
 document.getElementById("path").innerText=s.path;
 
 let html=`<h2>${s.title}</h2>`;
 html+=`<div class="script">${s.script}</div>`;
 
-if(s.detail){
-html+=`<div>${s.detail}</div>`;
-}
-
 if(s.buttons){
 s.buttons.forEach(b=>{
-html+=`<button onclick="render('${b.id}')" class="${b.style||""}">${b.label}</button>`;
+html+=`<button onclick="render('${b.id}')">${b.label}</button>`;
 });
 }
 
-html+=`<br><br><button onclick="render('home')">ホーム</button>`;
+if(s.checks){
+s.checks.forEach(c=>{
+html+=`<div class="check">□ ${c}</div>`;
+});
+}
+
+html+=`<br><button onclick="render('home')">ホーム</button>`;
 
 document.getElementById("detail").innerHTML=html;
 }
