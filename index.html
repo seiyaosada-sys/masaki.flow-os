@@ -3,497 +3,553 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>まさき整形 受付ガイドブック v1.0.0</title>
+  <title>まさき整形 受付対応OS v0.3.7</title>
   <style>
-    :root {
-      --bg: #0f172a;
-      --panel: #111827;
-      --panel2: #0b1220;
-      --card: #1e293b;
-      --cardHover: #334155;
-      --border: #243244;
-      --text: #f8fafc;
-      --muted: #94a3b8;
-      --blue: #38bdf8;
-      --green: #34d399;
-      --amber: #fbbf24;
-      --red: #f87171;
-      --radius: 12px;
-      --header-h: 64px;
+    :root{
+      --bg:#0f172a;
+      --panel:#111827;
+      --panel2:#0b1220;
+      --card:#1e293b;
+      --cardHover:#334155;
+      --border:#243244;
+      --text:#f8fafc;
+      --muted:#a7b0be;
+      --blue:#38bdf8;
+      --green:#34d399;
+      --amber:#fbbf24;
+      --red:#f87171;
+      --radius:16px;
     }
 
-    * { box-sizing: border-box; }
-    html, body { height: 100%; margin: 0; }
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Hiragino Sans", "Noto Sans JP", sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      overflow: hidden;
-      -webkit-tap-highlight-color: transparent;
+    *{ box-sizing:border-box; }
+    html, body{ height:100%; }
+    body{
+      margin:0;
+      font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue","Hiragino Sans","Noto Sans JP",sans-serif;
+      background:var(--bg);
+      color:var(--text);
+      overflow:hidden;
+      -webkit-tap-highlight-color:transparent;
     }
 
-    /* Header */
-    header {
-      height: var(--header-h);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 24px;
-      background: var(--panel);
-      border-bottom: 1px solid var(--border);
-      z-index: 100;
-    }
-    .brand { font-size: 18px; font-weight: 800; letter-spacing: 0.5px; color: var(--blue); }
-    .path-chip {
-      font-size: 12px;
-      color: var(--muted);
-      background: var(--bg);
-      padding: 4px 12px;
-      border-radius: 20px;
-      border: 1px solid var(--border);
+    header{
+      height:58px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding:0 20px;
+      background:var(--panel);
+      border-bottom:1px solid var(--border);
+      font-size:20px;
+      font-weight:700;
+      letter-spacing:.2px;
     }
 
-    /* Layout */
-    .layout {
-      display: flex;
-      height: calc(100vh - var(--header-h));
+    .header-right{
+      display:flex;
+      gap:10px;
+      align-items:center;
     }
 
-    /* Sidebar */
-    .sidebar {
-      width: 380px;
-      background: var(--panel2);
-      border-right: 1px solid var(--border);
-      display: flex;
-      flex-direction: column;
-    }
-    .search-box {
-      padding: 16px;
-      border-bottom: 1px solid var(--border);
-    }
-    .search-input {
-      width: 100%;
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 10px 12px;
-      color: var(--text);
-      font-size: 14px;
-      outline: none;
-    }
-    .search-input:focus { border-color: var(--blue); }
-
-    .menu-scroll {
-      flex: 1;
-      overflow-y: auto;
-      padding: 16px;
-      overscroll-behavior: contain;
-    }
-    .menu-category {
-      margin-bottom: 24px;
-    }
-    .category-label {
-      font-size: 11px;
-      font-weight: 800;
-      color: var(--muted);
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      margin-bottom: 8px;
-      padding-left: 4px;
-    }
-    .menu-list {
-      display: grid;
-      gap: 8px;
+    .path-chip{
+      font-size:12px;
+      color:var(--muted);
+      border:1px solid var(--border);
+      border-radius:999px;
+      padding:5px 10px;
+      background:#0f172a;
+      max-width:340px;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      white-space:nowrap;
     }
 
-    /* Buttons */
-    .tap-btn {
-      border: none;
-      border-radius: var(--radius);
-      background: var(--card);
-      color: var(--text);
-      padding: 14px 16px;
-      font-size: 15px;
-      font-weight: 600;
-      text-align: left;
-      cursor: pointer;
-      transition: all 0.2s;
-      user-select: none;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-    .tap-btn:active { transform: scale(0.98); }
-    .tap-btn.active { background: var(--blue); color: #000; }
-    .tap-btn.warn { border-left: 4px solid var(--amber); }
-    .tap-btn.danger { border-left: 4px solid var(--red); }
-    .tap-btn.ok { border-left: 4px solid var(--green); }
-
-    /* Main Content */
-    .main-content {
-      flex: 1;
-      overflow-y: auto;
-      padding: 32px;
-      background: var(--panel);
-      overscroll-behavior: contain;
-    }
-    .content-inner { max-width: 800px; margin: 0 auto; }
-
-    .badge {
-      display: inline-block;
-      padding: 4px 10px;
-      border-radius: 6px;
-      font-size: 12px;
-      font-weight: 700;
-      margin-bottom: 12px;
-    }
-    .badge.blue { background: rgba(56, 189, 248, 0.15); color: var(--blue); }
-    .badge.amber { background: rgba(251, 191, 36, 0.15); color: var(--amber); }
-    .badge.red { background: rgba(248, 113, 113, 0.15); color: var(--red); }
-
-    h2 { font-size: 32px; margin: 0 0 24px 0; font-weight: 800; }
-
-    .script-box {
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 24px;
-      font-size: 20px;
-      line-height: 1.6;
-      font-weight: 600;
-      margin-bottom: 24px;
-      position: relative;
-    }
-    .script-box::before {
-      content: "案内セリフ";
-      position: absolute;
-      top: -10px;
-      left: 20px;
-      background: var(--blue);
-      color: #000;
-      font-size: 10px;
-      padding: 2px 8px;
-      border-radius: 4px;
-      font-weight: 800;
+    .layout{
+      display:flex;
+      height:calc(100vh - 58px);
+      min-height:0;
     }
 
-    .info-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 16px;
-      margin-bottom: 24px;
+    .menu{
+      width:42%;
+      min-width:420px;
+      max-width:620px;
+      padding:18px;
+      background:var(--panel2);
+      border-right:1px solid var(--border);
+      overflow:auto;
+      overscroll-behavior:contain;
+      touch-action:pan-y;
     }
 
-    .card-section {
-      background: rgba(255,255,255,0.03);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 20px;
-      margin-bottom: 24px;
-    }
-    .section-title {
-      font-size: 14px;
-      font-weight: 800;
-      color: var(--muted);
-      margin-bottom: 16px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
+    .menu-grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:14px;
+      align-content:start;
     }
 
-    .check-list { display: grid; gap: 10px; }
-    .check-item {
-      display: flex;
-      gap: 12px;
-      align-items: flex-start;
-      padding: 12px;
-      background: var(--bg);
-      border-radius: 10px;
-      border: 1px solid var(--border);
-      cursor: pointer;
+    .detail{
+      width:58%;
+      min-width:0;
+      padding:24px;
+      background:var(--panel);
+      overflow:auto;
+      overscroll-behavior:contain;
+      touch-action:pan-y;
     }
-    .check-item input { width: 20px; height: 20px; margin-top: 2px; }
 
-    .faq-item {
-      margin-bottom: 16px;
-      border-bottom: 1px solid var(--border);
-      padding-bottom: 16px;
+    .tap-btn{
+      border:none;
+      border-radius:var(--radius);
+      background:var(--card);
+      color:var(--text);
+      padding:18px 16px;
+      font-size:18px;
+      font-weight:700;
+      text-align:left;
+      cursor:pointer;
+      transition:background .18s ease, transform .04s ease;
+      user-select:none;
+      touch-action:manipulation;
+      box-shadow:0 0 0 1px rgba(255,255,255,.03) inset;
     }
-    .faq-q { font-weight: 800; color: var(--blue); margin-bottom: 4px; display: flex; gap: 8px; }
-    .faq-a { font-size: 14px; color: var(--text); line-height: 1.6; padding-left: 24px; }
 
-    .btn-group { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 16px; }
-    .sub-btn {
-      padding: 12px 20px;
-      font-size: 14px;
-      font-weight: 700;
-      border-radius: 10px;
-      background: var(--card);
-      color: var(--text);
-      border: 1px solid var(--border);
-      cursor: pointer;
+    .tap-btn:active{
+      transform:scale(.992);
     }
-    .sub-btn:hover { background: var(--cardHover); }
 
-    /* Scrollbar */
-    ::-webkit-scrollbar { width: 6px; }
-    ::-webkit-scrollbar-track { background: transparent; }
-    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 10px; }
+    .tap-btn:hover{
+      background:var(--cardHover);
+    }
 
-    @media (max-width: 1024px) {
-      .sidebar { width: 320px; }
-      h2 { font-size: 24px; }
-      .script-box { font-size: 18px; }
+    .tap-btn.primary{ box-shadow:0 0 0 1px rgba(56,189,248,.32) inset; }
+    .tap-btn.warn{ box-shadow:0 0 0 1px rgba(251,191,36,.35) inset; }
+    .tap-btn.ok{ box-shadow:0 0 0 1px rgba(52,211,153,.35) inset; }
+    .tap-btn.danger{ box-shadow:0 0 0 1px rgba(248,113,113,.35) inset; }
+
+    .section-label{
+      font-size:13px;
+      color:var(--muted);
+      margin-bottom:12px;
+      font-weight:700;
+      letter-spacing:.3px;
+    }
+
+    .title-row{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:14px;
+      margin-bottom:16px;
+    }
+
+    .title-wrap{
+      min-width:0;
+    }
+
+    .badge{
+      display:inline-flex;
+      align-items:center;
+      padding:5px 10px;
+      border-radius:999px;
+      border:1px solid var(--border);
+      font-size:12px;
+      font-weight:800;
+      color:var(--muted);
+      margin-bottom:10px;
+      background:#0f172a;
+    }
+    .badge.blue{ color:#bfdbfe; border-color:rgba(56,189,248,.35); }
+    .badge.green{ color:#a7f3d0; border-color:rgba(52,211,153,.35); }
+    .badge.amber{ color:#fde68a; border-color:rgba(251,191,36,.35); }
+    .badge.red{ color:#fecaca; border-color:rgba(248,113,113,.35); }
+
+    .detail h2{
+      margin:0;
+      font-size:26px;
+      color:var(--blue);
+      line-height:1.25;
+      letter-spacing:.2px;
+    }
+
+    .script{
+      background:#0f172a;
+      border:1px solid var(--border);
+      border-radius:18px;
+      padding:18px;
+      font-size:22px;
+      line-height:1.65;
+      font-weight:700;
+      white-space:pre-line;
+      margin-bottom:18px;
+    }
+
+    .hint{
+      color:var(--muted);
+      font-size:14px;
+      line-height:1.7;
+      margin:-4px 0 18px;
+      white-space:pre-line;
+    }
+
+    .sub-grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:12px;
+      margin-bottom:18px;
+    }
+
+    .control-row{
+      display:flex;
+      gap:12px;
+      flex-wrap:wrap;
+      margin-bottom:18px;
+    }
+
+    .small-btn{
+      padding:12px 14px;
+      font-size:15px;
+      min-width:120px;
+    }
+
+    .checks{
+      display:grid;
+      gap:10px;
+      margin-bottom:18px;
+    }
+
+    .check-item{
+      display:flex;
+      gap:10px;
+      align-items:flex-start;
+      background:#0f172a;
+      border:1px solid var(--border);
+      border-radius:14px;
+      padding:12px 14px;
+      font-size:16px;
+      line-height:1.5;
+      font-weight:600;
+    }
+
+    .check-item input{
+      width:20px;
+      height:20px;
+      margin-top:2px;
+      flex:0 0 auto;
+    }
+
+    .detail-box{
+      background:#0f172a;
+      border:1px solid var(--border);
+      border-radius:14px;
+      padding:14px 16px;
+      font-size:15px;
+      line-height:1.7;
+      white-space:pre-line;
+      margin-bottom:18px;
+    }
+
+    .home-note{
+      font-size:15px;
+      color:var(--muted);
+      line-height:1.7;
+      white-space:pre-line;
+    }
+
+    @media (max-width: 1100px){
+      .menu{ min-width:360px; width:44%; }
+      .detail{ width:56%; }
+      .script{ font-size:20px; }
+      .detail h2{ font-size:24px; }
     }
   </style>
 </head>
 <body>
   <header>
-    <div class="brand">MASAKI ORTHO GUIDE</div>
+    <div>まさき整形 受付対応OS v0.3.7</div>
     <div class="header-right">
-      <div class="path-chip" id="pathDisplay">HOME</div>
+      <div class="path-chip" id="pathChip">HOME</div>
     </div>
   </header>
 
   <div class="layout">
-    <aside class="sidebar">
-      <div class="search-box">
-        <input type="text" class="search-input" id="searchInput" placeholder="キーワードで検索（例：労災、MRI）">
-      </div>
-      <div class="menu-scroll" id="menuContainer">
-        <!-- Menu categories will be injected here -->
-      </div>
+    <aside class="menu">
+      <div class="section-label">メニュー</div>
+      <div class="menu-grid" id="menuGrid"></div>
     </aside>
 
-    <main class="main-content" id="mainContent">
-      <!-- Content will be injected here -->
-    </main>
+    <main class="detail" id="detailArea"></main>
   </div>
 
   <script>
-    const DATA = {
-      categories: [
-        { id: "basic", label: "基本対応", items: ["home", "first", "return", "wait"] },
-        { id: "exam", label: "検査・処置", items: ["results", "mri", "xp", "crutch", "sand"] },
-        { id: "docs", label: "書類・公費", items: ["docs", "rousai", "accident", "seiho"] },
-        { id: "money", label: "会計・自費", items: ["money", "jihi"] }
-      ],
-      screens: {
-        home: {
-          title: "受付ガイドブックへようこそ",
-          badge: "HOME",
-          badgeClass: "blue",
-          script: "こちらは「まさき整形外科」の受付対応ガイドです。\n左のメニューから項目を選択するか、検索窓を活用してください。",
-          detail: "【更新情報 v1.0.0】\n・検索機能を追加しました。\n・FAQセクションを新設しました。\n・UIをガイドブック形式に刷新しました。",
-          faq: [
-            { q: "このツールの使い方は？", a: "左側のメニューから現在の状況に合うボタンを押してください。案内すべきセリフと、確認すべきチェックリストが表示されます。" },
-            { q: "検索はどう使う？", a: "上の検索窓に「保険証」や「返金」などのキーワードを入れると、関連する項目が絞り込まれます。" }
-          ]
-        },
-        first: {
-          title: "初診の受付",
-          badge: "基本",
-          badgeClass: "blue",
-          script: "初診の方ですね。問診票のご記入と、マイナンバーカードまたは保険証の確認をお願いします。",
-          checks: ["問診票の案内・回収", "マイナ/保険証の資格確認", "他院からの紹介状の有無を確認", "2ヶ月以上のブランクがあるか確認"],
-          faq: [
-            { q: "紹介状がない場合は？", a: "当院では紹介状がなくても受診可能です。ただし、お持ちであればスムーズに診察が進む旨をお伝えください。" },
-            { q: "予約は必要？", a: "当院は予約制ではありませんが、リハビリなどは予約枠があることを説明してください。" }
-          ]
-        },
-        return: {
-          title: "再診の受付",
-          badge: "基本",
-          badgeClass: "blue",
-          script: "本日はどのようなご用件でしょうか？",
-          buttons: [
-            { id: "nr_exam", label: "診察・経過観察" },
-            { id: "nr_drug", label: "お薬の処方のみ" },
-            { id: "nr_dr_inj", label: "注射の希望" }
-          ]
-        },
-        rousai: {
-          title: "労災（仕事中・通勤中）",
-          badge: "重要",
-          badgeClass: "red",
-          script: "お仕事中や通勤中の怪我ですね。労災扱いとなるため、健康保険は使用できません。",
-          detail: "【重要事項】\n・会社から「5号」または「16号の3」の書類をもらう必要があります。\n・書類が揃うまでは、一旦10割（全額）でお預かりとなります。",
-          checks: ["仕事中か通勤中かを確認", "健康保険不可の説明", "10割預かりの説明", "会社への報告有無を確認"],
-          faq: [
-            { q: "いつ返金される？", a: "会社から書類が届き、当院で処理が完了した後に窓口で精算・返金いたします。" }
-          ]
-        },
-        accident: {
-          title: "交通事故・第三者行為",
-          badge: "重要",
-          badgeClass: "red",
-          script: "交通事故での受診ですね。相手方の保険会社から連絡は入っていますでしょうか？",
-          detail: "【返金ルール】\n・保険会社から「一括対応」の連絡があれば窓口負担は0円です。\n・連絡がない場合は10割預かりとなります。",
-          checks: ["保険会社名と担当者名の確認", "一括対応の有無を確認", "警察用診断書の必要性を確認"],
-          faq: [
-            { q: "自分の保険を使いたいと言われたら？", a: "第三者行為による傷病届が必要になる旨を説明し、基本は自賠責優先であることを伝えてください。" }
-          ]
-        },
-        mri: {
-          title: "MRI予約の手順",
-          badge: "検査",
-          badgeClass: "amber",
-          script: "MRIの予約ですね。外部提携先での検査となりますので、予約枠を確認します。",
-          detail: "1. 希望日時をヒアリング\n2. 専用iPadで予約入力\n3. 案内票を印刷して患者へ渡す",
-          checks: ["体内に金属がないか確認", "閉所恐怖症の有無を確認", "予約票の渡し忘れがないか確認"]
-        }
-      }
+    const MENU = [
+      { id:"home", label:"ホーム", style:"primary" },
+      { id:"first", label:"初診", style:"primary" },
+      { id:"return", label:"再診", style:"primary" },
+      { id:"results", label:"骨塩結果 / 採血結果", style:"primary" },
+      { id:"mri", label:"MRI予約", style:"primary" },
+      { id:"wait", label:"待ち状況 / 外出案内", style:"warn" },
+      { id:"docs", label:"書類", style:"danger" },
+      { id:"rousai", label:"労災", style:"danger" },
+      { id:"accident", label:"自賠 / 第三者 / 学校", style:"danger" },
+      { id:"seiho", label:"生活保護", style:"ok" },
+      { id:"crutch", label:"松葉杖", style:"primary" },
+      { id:"xp", label:"XP（レントゲン）", style:"primary" },
+      { id:"money", label:"金額説明", style:"warn" },
+      { id:"jihi", label:"自費 / 材料費", style:"warn" },
+      { id:"sand", label:"サンド / 逆サンド", style:"warn" }
+    ];
+
+    const SCREENS = {
+      home: {
+        badge: "入口",
+        badgeClass: "blue",
+        title: "選択してください",
+        script: "左のボタンを押すと、案内セリフが表示されます。",
+        hint: "Androidタブレット用：スクロール中の誤タップを抑える設定にしてあります。",
+        detail: "現場運用基準：v0.3.7\n交通事故返金フローおよび学校内怪我のフローを追加しました。"
+      },
+
+      /* 初診・再診・結果・MRI・待ち状況などは既存通り (省略せず保持) */
+      first: { badge: "通常", badgeClass: "blue", title: "初診", script: "問診票のご記入と資格確認をお願いします。\nマイナ登録・保険証確認・必要書類のスキャンを行います。\n2ヶ月以上空きがある方は初診扱いです。", checks: ["問診票を案内・回収", "マイナ / 保険証を確認", "必要書類をスキャン", "2ヶ月以上空いていれば初診扱い"] },
+      return: { badge: "通常", badgeClass: "blue", title: "再診", script: "本日はどの内容ですか？", buttons: [{ id:"nr_exam", label:"経過 / 診察", style:"primary" }, { id:"nr_drug", label:"薬の処方（診察必須）", style:"primary" }, { id:"nr_dr_inj", label:"Dr注射", style:"primary" }, { id:"nr_bone", label:"骨塩（骨密度）", style:"primary" }, { id:"nr_blood", label:"採血", style:"primary" }, { id:"xp", label:"XP（診察必須）", style:"primary" }, { id:"nr_physio", label:"物療のみ（電気）", style:"primary" }, { id:"nr_rehab", label:"運動リハのみ", style:"primary" }, { id:"sand", label:"混雑時ヘルプ", style:"warn" }] },
+      nr_exam: { badge: "通常", badgeClass: "blue", title: "経過 / 診察", script: "診察からのご案内になります。", backTo: "return" },
+      nr_drug: { badge: "通常", badgeClass: "blue", title: "薬の処方", script: "お薬の処方は診察が必要になります。", backTo: "return" },
+      nr_dr_inj: { badge: "通常", badgeClass: "blue", title: "Dr注射", script: "医師の診察後に注射となります。", checks: ["注射部位を確認（必要時）", "診察へ案内"], backTo: "return" },
+      nr_bone: { badge: "通常", badgeClass: "blue", title: "骨塩（骨密度）", script: "骨密度（骨塩）検査ですね。\n検査部位でご案内が変わります。", buttons: [{ id:"bone_forearm", label:"前腕（当日）", style:"ok" }, { id:"bone_spinehip", label:"腰椎・大腿（当日以降）", style:"warn" }, { id:"bone_result", label:"結果を聞きたい（診察）", style:"primary" }], backTo: "return" },
+      bone_forearm: { badge: "通常", badgeClass: "blue", title: "骨塩：前腕", script: "骨密度（前腕）は当日検査できます。\nこのまま骨塩へご案内します。", checks: ["前腕＝当日で案内", "骨塩へ案内"], backTo: "nr_bone" },
+      bone_spinehip: { badge: "通常", badgeClass: "blue", title: "骨塩：腰椎・大腿", script: "骨密度（腰椎・大腿）は当日以降のご案内になります。\n検査日を確認してご案内します。\n結果説明は診察で行います。", checks: ["腰椎・大腿＝当日以降", "検査日（予約 / 案内）を確認"], backTo: "nr_bone" },
+      bone_result: { badge: "通常", badgeClass: "blue", title: "骨塩結果", script: "骨塩の結果は、診察で医師からご説明します。\n本日は診察へご案内します。", checks: ["結果説明は診察で行う旨を説明", "診察へ案内"], backTo: "nr_bone" },
+      nr_blood: { badge: "通常", badgeClass: "blue", title: "採血", script: "採血ですね。\nこのまま採血へご案内します。", buttons: [{ id:"blood_result", label:"結果を聞きたい（診察）", style:"primary" }], checks: ["採血へ案内"], backTo: "return" },
+      blood_result: { badge: "通常", badgeClass: "blue", title: "採血結果", script: "採血の結果は、診察で医師からご説明します。\n本日は診察へご案内します。", checks: ["結果説明は診察で行う旨を説明", "診察へ案内"], backTo: "nr_blood" },
+      nr_physio: { badge: "通常", badgeClass: "blue", title: "物療（電気）", script: "物療（電気）の指示が出ている場合、そのままご案内可能です。", checks: ["カルテで物療の指示を確認"], backTo: "return" },
+      nr_rehab: { badge: "通常", badgeClass: "blue", title: "運動リハのみ", script: "予約時間に合わせてご案内します。", checks: ["予約枠（20分）を確認"], backTo: "return" },
+      results: { badge: "通常", badgeClass: "blue", title: "結果を聞きたい", script: "どちらの結果ですか？", buttons: [{ id:"bone_result_home", label:"骨塩結果", style:"primary" }, { id:"blood_result_home", label:"採血結果", style:"primary" }] },
+      bone_result_home: { badge: "通常", badgeClass: "blue", title: "骨塩結果", script: "骨塩の結果は、診察で医師からご説明します。\n本日は診察へご案内します。", checks: ["結果説明は診察で行う旨を説明", "診察へ案内"], backTo: "results" },
+      blood_result_home: { badge: "通常", badgeClass: "blue", title: "採血結果", script: "採血の結果は、診察で医師からご説明します。\n本日は診察へご案内します。", checks: ["結果説明は診察で行う旨を説明", "診察へ案内"], backTo: "results" },
+      mri: { badge: "通常", badgeClass: "blue", title: "MRI予約", script: "MRIの予約ですね。\n予約は別のiPadで取得します。", hint: "細かい詳細は「まさき」へ確認。", detail: "手順：\n1) 希望の日付を伺う\n2) 別iPadで予約日時を入力\n3) 患者情報＋予約日時を両面印刷して、お会計時に渡す\n4) iPad と 電カルへ入力\n5) 診療情報提供書を印刷 → スキャン", checks: ["希望日を確認", "別iPadで予約入力", "患者情報＋予約日時を両面印刷（会計時に渡す）", "iPadと電カルへ入力", "診療情報提供書を印刷 → スキャン", "細かい詳細は「まさき」へ確認"] },
+      wait: { badge: "待ち", badgeClass: "amber", title: "待ち状況 / 外出案内", script: "現在の待ち人数はどれくらいですか？", buttons: [{ id:"wait_0_5", label:"0〜5人（空いてる）", style:"ok" }, { id:"wait_6_10", label:"6〜10人（少しかかる）", style:"warn" }, { id:"wait_11p", label:"11人以上（混雑）", style:"danger" }] },
+      wait_0_5: { badge: "待ち", badgeClass: "amber", title: "待ち状況（0〜5人）", script: "現在は比較的空いております。\n診察内容により順番が前後する場合があります。", backTo: "wait" },
+      wait_6_10: { badge: "待ち", badgeClass: "amber", title: "待ち状況（6〜10人）", script: "現在やや混み合っております。\n診察内容により順番が前後する場合があります。", backTo: "wait" },
+      wait_11p: { badge: "待ち", badgeClass: "amber", title: "待ち状況（11人以上）", script: "現在混雑しております。\n受付を済ませていただければ外出も可能です。", detail: "外出時：\nお戻りの際にピンクの番号札を受付にお渡しください。\n順番の更新は、白の番号札裏面のQRコードから確認できます。", backTo: "wait" },
+
+      /* 書類・労災 */
+      docs: { badge: "書類", badgeClass: "red", title: "書類", script: "どの書類ですか？", buttons: [{ id:"docs_rousai", label:"労災（書類）", style:"danger" }, { id:"docs_jibai", label:"自賠責（書類）", style:"danger" }, { id:"docs_shindan", label:"当院発行 診断書A4", style:"primary" }, { id:"docs_common", label:"任意保険 / 傷病手当 / 生命保険 / その他", style:"warn" }, { id:"docs_receive", label:"受け取り（本人確認）", style:"primary" }] },
+      docs_rousai: { badge: "書類", badgeClass: "red", title: "書類：労災", script: "労災の書類ですね。\nまず「提出先」「書式の有無」「期限」の3点を確認します。", hint: "作成には2〜3週間ほど。完成確認のお電話後に来院ください。", checks: ["① 提出先（会社 / 労基 / 保険者）を確認", "② 指定書式の有無（持参 / 当院記入欄）を確認", "③ 期限（いつまでに必要か）を確認", "書類の種類を確認しお預かり（控え必要ならコピー）", "作成目安（2〜3週）を説明"], backTo: "docs" },
+      docs_jibai: { badge: "書類", badgeClass: "red", title: "書類：自賠責", script: "自賠責の書類ですね。\nまず「提出先」「書式の有無」「期限」の3点を確認します。", hint: "作成には2〜3週間ほど。完成確認のお電話後に来院ください。", checks: ["① 提出先（保険会社 / 自賠責 / 弁護士等）を確認", "② 指定書式の有無（持参 / 当院記入欄）を確認", "③ 期限（いつまでに必要か）を確認", "保険会社名 / 担当者（分かる範囲）を確認", "お預かり（控え必要ならコピー）", "作成目安（2〜3週）を説明"], backTo: "docs" },
+      docs_shindan: { badge: "書類", badgeClass: "red", title: "当院発行 診断書A4", script: "当院発行の診断書（A4）ですね。\n料金は税込5,500円です。", hint: "受け取り後の修正は、手数料がかかる場合があります。", detail: "完成まで2〜3週間。\n院長記入は火曜・水曜・木曜のお昼休み。", checks: ["用途（提出先）を確認", "記載希望の内容があるか確認", "料金 5,500円 を説明", "受け取り前に内容確認する旨を説明", "受取後の修正は手数料の可能性を説明"], backTo: "docs" },
+      docs_common: { badge: "書類", badgeClass: "red", title: "書類：共通案内", script: "書類の料金は、内容や保険会社の指定により異なります。\n作成には2〜3週間ほどお時間をいただいております。", detail: "完成確認のお電話をしていただいてからご来院ください。\n医師は火曜・水曜・木曜のお昼休みに書類を作成しております。\nそのため即日発行はできません。", backTo: "docs" },
+      docs_receive: { badge: "書類", badgeClass: "red", title: "書類：受け取り", script: "書類のお受け取りですね。\n本人確認をさせていただきます。", detail: "個人情報を含むため、本人確認が取れない場合はお渡しできません。", buttons: [{ id:"docs_proxy", label:"代理受取（委任状）", style:"warn" }], checks: ["診察券を確認", "生年月日・住所の口頭確認", "必要なら保険証 / マイナ確認"], backTo: "docs" },
+      docs_proxy: { badge: "書類", badgeClass: "red", title: "書類：代理受取", script: "代理の方が受け取られる場合は、委任状と身分証の確認が必要です。\n本人確認が取れない場合はお渡しできません。", checks: ["委任状を確認", "代理人の身分証を確認"], backTo: "docs_receive" },
+      rousai: { badge: "労災", badgeClass: "red", title: "労災", script: "今回のケガはどちらですか？", buttons: [{ id:"rousai_work", label:"業務中", style:"danger" }, { id:"rousai_commute", label:"通勤中", style:"danger" }, { id:"rousai_unknown", label:"まだ分からない", style:"warn" }] },
+      rousai_work: { badge: "労災", badgeClass: "red", title: "労災：業務中", script: "仕事中のケガは健康保険を使用できません。\n必要書類が揃うまでは、いったん10割でのお預かりになります。", detail: "当院が最初の受診 → 5号\n他院からの転院 → 6号\n認定後に返金。", checks: ["業務中のケガであることを確認", "健康保険は使えないと説明", "必要書類が揃うまで10割預かりと説明"], backTo: "rousai" },
+      rousai_commute: { badge: "労災", badgeClass: "red", title: "労災：通勤中", script: "通勤中のケガは健康保険を使用できません。\n必要書類が揃うまでは、いったん10割でのお預かりになります。", detail: "当院が最初の受診 → 16号の3\n他院からの転院 → 16号の4\n認定後に返金。", checks: ["通勤中のケガであることを確認", "健康保険は使えないと説明", "必要書類が揃うまで10割預かりと説明"], backTo: "rousai" },
+      rousai_unknown: { badge: "労災", badgeClass: "red", title: "労災：まだ分からない", script: "お仕事中・通勤中のケガの場合は健康保険は使えません。\n勤務先にご確認をお願いします。", backTo: "rousai" },
+
+      /* 自賠責・第三者・学校内怪我 (資料反映箇所) */
+      accident: {
+        badge: "事故/学校",
+        badgeClass: "red",
+        title: "自賠 / 第三者 / 学校",
+        script: "どのケースですか？",
+        buttons: [
+          { id:"acc_traffic", label:"交通事故（加害者あり）", style:"danger" },
+          { id:"acc_school", label:"学校・園内・通学中の怪我", style:"warn" },
+          { id:"acc_third", label:"第三者行為（喧嘩など）", style:"danger" }
+        ]
+      },
+
+      acc_traffic: {
+        badge: "事故",
+        badgeClass: "red",
+        title: "交通事故（自賠責）",
+        script: "健康保険は使用できません。\n相手側の任意保険（一括対応）か、10割負担での受診となります。",
+        detail: "【返金について】\n・10割でお支払いいただいた分は、後日保険会社から連絡があれば窓口にて返金します。\n・※警察宛診断書以外の文書料は自己負担となり、返金対象外です。",
+        checks: [
+          "健康保険不可の説明",
+          "保険会社から当院へ「一括対応」の電話を依頼するよう案内",
+          "連絡が来れば窓口負担0円、未連絡なら10割預かり",
+          "「同意書」が届いたら速やかに記入し返送するよう案内",
+          "文書料（警察用以外）は返金不可の説明済"
+        ],
+        backTo: "accident"
+      },
+
+      acc_school: {
+        badge: "学校",
+        badgeClass: "amber",
+        title: "学校・園内・通学中の怪我",
+        script: "学校管理下での負傷は、原則「受給券（子ども医療）」は使用できません。\n「スポーツ振興センター災害共済給付制度」を利用します。",
+        detail: "【お支払い】\n・窓口では一度「2割」または「3割」でお支払いいただきます。\n・後日、学校から給付（3割分＋見舞金1割）が行われます。\n・※受給券を使用して受診した後に、当院でこの制度へ切り替えることはできません。",
+        checks: [
+          "受給券は使用不可である旨を説明",
+          "窓口で2割または3割負担が必要な旨を説明",
+          "学校から「医療等の状況（別紙3(1)）」をもらって来院するよう案内",
+          "治療終了後に当院で用紙を作成し、学校へ提出する流れを説明"
+        ],
+        backTo: "accident"
+      },
+
+      acc_third: {
+        badge: "第三者",
+        badgeClass: "red",
+        title: "第三者行為",
+        script: "第三者行為（喧嘩や他人のペットによる負傷など）は、健康保険が使えない場合があります。\n保険者（組合・協会）へ健康保険使用可否の確認が必要です。",
+        detail: "確認が取れない場合や保険適用外なら、10割負担となります。",
+        checks: [
+          "第三者行為であることを確認",
+          "保険者へ確認が必要と説明",
+          "確認不可なら10割負担になる旨を案内"
+        ],
+        backTo: "accident"
+      },
+
+      /* 以下、既存スクリーン (生保・松葉杖・金額など) */
+      seiho: { badge: "生保", badgeClass: "green", title: "生活保護", script: "生活保護の医療扶助での受診ですね。", buttons: [{ id:"seiho_have", label:"医療券あり", style:"ok" }, { id:"seiho_no", label:"医療券なし / 電話確認まだ", style:"danger" }, { id:"seiho_unknown", label:"不明", style:"warn" }] },
+      seiho_have: { badge: "生保", badgeClass: "green", title: "生活保護：医療券あり", script: "医療券を確認します。", checks: ["有効期限確認", "医療機関名（まさき整形外科）確認", "傷病名確認", "負担欄確認"], backTo: "seiho" },
+      seiho_no: { badge: "生保", badgeClass: "green", title: "生活保護：電話確認が取れない", script: "担当のケースワーカーへ、当院へ受診する旨をお伝えください。\n市から当院へ電話確認が取れれば、医療扶助で受診可能です。", detail: "電話確認が取れない場合は、医療扶助としては受付できません。\nただし、10割（自費扱い）であれば本日は受診できます。\n10割の場合は当日のお支払いが必要です。", checks: ["ケースワーカーへ連絡依頼を案内", "医療扶助は電話確認が必要と説明", "確認不可なら10割（自費）で受診可能と説明", "10割の場合は当日支払いが必要と説明"], backTo: "seiho" },
+      seiho_unknown: { badge: "生保", badgeClass: "green", title: "生活保護：不明", script: "担当のケースワーカーへ、当院で受診可能かご確認ください。\n電話確認が取れれば医療扶助で受診可能です。", detail: "電話確認が取れない場合は医療扶助としては受付できませんが、10割（自費扱い）であれば本日は受診できます。", backTo: "seiho" },
+      crutch: { badge: "松葉", badgeClass: "blue", title: "松葉杖", script: "松葉杖のご用件はどちらですか？", buttons: [{ id:"crutch_lend", label:"貸出（診察必須）", style:"primary" }, { id:"crutch_return", label:"返却", style:"primary" }] },
+      crutch_lend: { badge: "松葉", badgeClass: "blue", title: "松葉杖：貸出", script: "松葉杖の貸出は診察が必要になります。\n借用書（本紙＋控え）と預かり金5,000円をお預かりします。", checks: ["診察へ案内（貸出判断は医師）", "借用書 本紙＋控え（2枚）", "5,000円 預かり", "控えを患者へ渡した", "カルテ記録"], backTo: "crutch" },
+      crutch_return: { badge: "松葉", badgeClass: "blue", title: "松葉杖：返却", script: "松葉杖の返却ですね。\n本日は診察のご予定はありますか？", buttons: [{ id:"crutch_return_visit", label:"ある（原則）", style:"ok" }, { id:"crutch_return_novisit", label:"ない（入院・もう使わない等）", style:"warn" }], backTo: "crutch" },
+      crutch_return_visit: { badge: "松葉", badgeClass: "blue", title: "松葉杖：返却（診察あり）", script: "原則、診察後に返却処理を行います。\n借用書をご提示ください。", checks: ["借用書確認", "使用日数を確認", "当日会計と合算し使用料を精算"], backTo: "crutch_return" },
+      crutch_return_novisit: { badge: "松葉", badgeClass: "blue", title: "松葉杖：返却（診察なし）", script: "医師の診察なしで松葉杖を終了される場合は、自己判断での返却となります。\nその後の転倒や症状悪化について、当院では責任を負いかねます。", detail: "必要であれば、診察後に終了することも可能です。", checks: ["自己判断での返却の説明済", "借用書の返却欄サイン確認"], backTo: "crutch_return" },
+      xp: { badge: "通常", badgeClass: "blue", title: "XP（レントゲン）", script: "レントゲン（XP）は診察が必要になります。\n先に診察受付へご案内します。", checks: ["診察必須の説明を伝えた"] },
+      money: { badge: "共通", badgeClass: "amber", title: "金額説明", script: "どの説明が必要ですか？", buttons: [{ id:"money_common", label:"金額について（点数制）", style:"warn" }, { id:"money_tenwari", label:"10割いくら？", style:"primary" }] },
+      money_common: { badge: "共通", badgeClass: "amber", title: "金額について（共通）", script: "診療は「点数制」で計算しているため、内容によって金額が変わります。\n診察・処置後に確定します。", backTo: "money" },
+      money_tenwari: { badge: "共通", badgeClass: "amber", title: "10割いくら？", script: "診療は点数制のため内容により変わります。\n目安として、診察のみであれば数千円〜1万円前後が多いですが、検査や処置で変動します。\n正確な金額は診察後に確定します。", backTo: "money" },
+      jihi: { badge: "自費", badgeClass: "amber", title: "自費 / 材料費", script: "材料費や自費物品は、保険とは別で自費になります。\n10割負担とは別の扱いです。", detail: "現状は一覧表で運用。\nよく使うものから順に今後組み込み予定。", checks: ["10割負担とは別の自費と説明", "一覧表で金額確認"] },
+      sand: { badge: "待ち", badgeClass: "amber", title: "サンド / 逆サンド", script: "混雑時の案内はどれですか？", buttons: [{ id:"sand_def", label:"サンド / 逆サンド（定義）", style:"warn" }, { id:"sand_elec", label:"物療がある人を先に案内したい", style:"primary" }, { id:"sand_rehab", label:"運動リハ予約が優先", style:"primary" }] },
+      sand_def: { badge: "待ち", badgeClass: "amber", title: "サンド / 逆サンド", script: "■ サンド：\n「物療（電気）」と「運動リハ」の間に診察を挟む\n\n■ 逆サンド：\n診察 → 物療（電気） → 運動リハ（または逆順）", detail: "混雑時は「物療がある人は先に物療へ案内」できる場合があります。\n※カルテの指示確認が前提", backTo: "sand" },
+      sand_elec: { badge: "待ち", badgeClass: "amber", title: "混雑時：物療を先に案内", script: "診察が混んでいる場合、物療（電気）がある方は先に物療へご案内できることがあります。", detail: "※カルテで指示が出ている方のみ", checks: ["カルテで物療の指示を確認"], backTo: "sand" },
+      sand_rehab: { badge: "待ち", badgeClass: "amber", title: "運動リハ：予約優先", script: "運動器リハビリは予約が最優先です（20分間隔）。\n予約時間に合わせてご案内します。", checks: ["予約枠（20分）を確認"], backTo: "sand" }
     };
 
-    const state = {
-      current: "home",
-      search: "",
-      checks: JSON.parse(localStorage.getItem("masaki_checks") || "{}")
-    };
+    const CHECK_STORE_KEY = "masaki_os_v037_checks";
+    let currentScreen = "home";
+    let checks = {};
 
-    function renderMenu() {
-      const container = document.getElementById("menuContainer");
-      container.innerHTML = "";
+    function loadChecks(){
+      try{
+        const raw = localStorage.getItem(CHECK_STORE_KEY);
+        if(raw){ checks = JSON.parse(raw) || {}; }
+      }catch(e){ checks = {}; }
+    }
+    function saveChecks(){ localStorage.setItem(CHECK_STORE_KEY, JSON.stringify(checks)); }
+    function getCheckKey(screenId, idx){ return screenId + "__" + idx; }
 
-      DATA.categories.forEach(cat => {
-        const filteredItems = cat.items.filter(id => {
-          const screen = DATA.screens[id];
-          if (!screen) return false;
-          return screen.title.includes(state.search) || id.includes(state.search);
-        });
-
-        if (filteredItems.length === 0) return;
-
-        const catDiv = document.createElement("div");
-        catDiv.className = "menu-category";
-        catDiv.innerHTML = `<div class="category-label">${cat.label}</div>`;
-        
-        const list = document.createElement("div");
-        list.className = "menu-list";
-        
-        filteredItems.forEach(id => {
-          const screen = DATA.screens[id];
-          const btn = document.createElement("button");
-          btn.className = `tap-btn ${id === state.current ? 'active' : ''}`;
-          if (screen.badgeClass === 'red') btn.classList.add('danger');
-          if (screen.badgeClass === 'amber') btn.classList.add('warn');
-          
-          btn.innerHTML = `<span>${screen.title}</span>`;
-          btn.onclick = () => navigate(id);
-          list.appendChild(btn);
-        });
-
-        catDiv.appendChild(list);
-        container.appendChild(catDiv);
+    function renderMenu(){
+      const grid = document.getElementById("menuGrid");
+      grid.innerHTML = "";
+      MENU.forEach(function(item){
+        const btn = document.createElement("button");
+        btn.className = "tap-btn " + (item.style || "");
+        btn.textContent = item.label;
+        btn.setAttribute("data-target", item.id);
+        grid.appendChild(btn);
       });
     }
 
-    function navigate(id) {
-      state.current = id;
-      renderMenu();
-      renderContent();
-      document.getElementById("pathDisplay").textContent = id.toUpperCase();
-      document.getElementById("mainContent").scrollTop = 0;
+    function renderScreen(screenId){
+      currentScreen = screenId;
+      const s = SCREENS[screenId];
+      const detail = document.getElementById("detailArea");
+      const pathChip = document.getElementById("pathChip");
+      pathChip.textContent = screenId.toUpperCase();
+
+      let html = "";
+      html += '<div class="title-row">';
+      html +=   '<div class="title-wrap">';
+      html +=     '<div class="badge ' + (s.badgeClass || "blue") + '">' + escapeHtml(s.badge || "") + '</div>';
+      html +=     '<h2>' + escapeHtml(s.title || "") + '</h2>';
+      html +=   '</div>';
+      html +=   '<div class="control-row">';
+      if(s.backTo){ html += '<button class="tap-btn small-btn" data-target="' + s.backTo + '">戻る</button>'; }
+      html +=   '<button class="tap-btn small-btn" data-target="home">ホーム</button>';
+      html +=   '</div>';
+      html += '</div>';
+
+      html += '<div class="script">' + escapeHtml(s.script || "") + '</div>';
+      if(s.hint){ html += '<div class="hint">' + escapeHtml(s.hint) + '</div>'; }
+
+      if(s.buttons && s.buttons.length){
+        html += '<div class="sub-grid">';
+        s.buttons.forEach(function(b){
+          html += '<button class="tap-btn ' + (b.style || "") + '" data-target="' + b.id + '">' + escapeHtml(b.label) + '</button>';
+        });
+        html += '</div>';
+      }
+
+      if(s.checks && s.checks.length){
+        html += '<div class="section-label">内部チェック</div>';
+        html += '<div class="checks">';
+        s.checks.forEach(function(text, idx){
+          const key = getCheckKey(screenId, idx);
+          const checked = checks[key] ? "checked" : "";
+          html += '<label class="check-item">';
+          html +=   '<input type="checkbox" data-check-key="' + key + '" ' + checked + '>';
+          html +=   '<span>' + escapeHtml(text) + '</span>';
+          html += '</label>';
+        });
+        html += '</div>';
+      }
+
+      if(s.detail){
+        html += '<div class="section-label">詳細</div>';
+        html += '<div class="detail-box">' + escapeHtml(s.detail) + '</div>';
+      }
+
+      detail.innerHTML = html;
+      bindCheckEvents();
     }
 
-    function renderContent() {
-      const screen = DATA.screens[state.current];
-      const container = document.getElementById("mainContent");
-      
-      if (!screen) {
-        container.innerHTML = "Content not found.";
-        return;
-      }
-
-      let html = `<div class="content-inner">`;
-      html += `<div class="badge ${screen.badgeClass || 'blue'}">${screen.badge}</div>`;
-      html += `<h2>${screen.title}</h2>`;
-      
-      if (screen.script) {
-        html += `<div class="script-box">${screen.script.replace(/\n/g, '<br>')}</div>`;
-      }
-
-      if (screen.buttons) {
-        html += `<div class="section-title">関連メニュー</div>`;
-        html += `<div class="btn-group">`;
-        screen.buttons.forEach(b => {
-          html += `<button class="sub-btn" onclick="navigate('${b.id}')">${b.label}</button>`;
+    function bindCheckEvents(){
+      document.querySelectorAll('[data-check-key]').forEach(function(el){
+        el.addEventListener('change', function(){
+          const key = el.getAttribute('data-check-key');
+          checks[key] = el.checked ? 1 : 0;
+          saveChecks();
         });
-        html += `</div><div style="margin-bottom:32px"></div>`;
-      }
-
-      if (screen.checks) {
-        html += `<div class="card-section">`;
-        html += `<div class="section-title">確認事項（チェックリスト）</div>`;
-        html += `<div class="check-list">`;
-        screen.checks.forEach((c, i) => {
-          const key = `${state.current}_${i}`;
-          const checked = state.checks[key] ? "checked" : "";
-          html += `
-            <label class="check-item">
-              <input type="checkbox" ${checked} onchange="toggleCheck('${key}', this.checked)">
-              <span>${c}</span>
-            </label>
-          `;
-        });
-        html += `</div></div>`;
-      }
-
-      if (screen.detail) {
-        html += `<div class="card-section">`;
-        html += `<div class="section-title">詳細・手順</div>`;
-        html += `<div style="white-space:pre-line; font-size:15px; line-height:1.7">${screen.detail}</div>`;
-        html += `</div>`;
-      }
-
-      if (screen.faq) {
-        html += `<div class="card-section">`;
-        html += `<div class="section-title">よくある質問 (FAQ)</div>`;
-        screen.faq.forEach(f => {
-          html += `
-            <div class="faq-item">
-              <div class="faq-q"><span>Q.</span> ${f.q}</div>
-              <div class="faq-a"><span>A.</span> ${f.a}</div>
-            </div>
-          `;
-        });
-        html += `</div>`;
-      }
-
-      html += `</div>`;
-      container.innerHTML = html;
+      });
     }
 
-    function toggleCheck(key, val) {
-      state.checks[key] = val;
-      localStorage.setItem("masaki_checks", JSON.stringify(state.checks));
+    function escapeHtml(str){
+      return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
     }
 
-    // Search logic
-    document.getElementById("searchInput").oninput = (e) => {
-      state.search = e.target.value;
-      renderMenu();
-    };
-
-    // Tablet scroll protection
     let tapState = null;
-    document.addEventListener("pointerdown", e => {
-      const btn = e.target.closest(".tap-btn, .sub-btn, .check-item");
-      if (btn) tapState = { x: e.clientX, y: e.clientY, time: Date.now() };
-    });
-    document.addEventListener("pointerup", e => {
-      if (!tapState) return;
-      const dist = Math.hypot(e.clientX - tapState.x, e.clientY - tapState.y);
-      const time = Date.now() - tapState.time;
-      if (dist > 10 || time > 500) {
-        // Ignore
+    const MOVE_LIMIT = 14;
+    const TIME_LIMIT = 500;
+
+    document.addEventListener("pointerdown", function(e){
+      const btn = e.target.closest(".tap-btn");
+      if(!btn) return;
+      tapState = { btn: btn, x: e.clientX, y: e.clientY, time: Date.now(), moved: false, pointerId: e.pointerId };
+    }, true);
+
+    document.addEventListener("pointermove", function(e){
+      if(!tapState || e.pointerId !== tapState.pointerId) return;
+      if(Math.abs(e.clientX - tapState.x) > MOVE_LIMIT || Math.abs(e.clientY - tapState.y) > MOVE_LIMIT){ tapState.moved = true; }
+    }, true);
+
+    document.addEventListener("pointerup", function(e){
+      if(!tapState || e.pointerId !== tapState.pointerId) return;
+      const btn = e.target.closest(".tap-btn");
+      if(btn && btn === tapState.btn && !tapState.moved && (Date.now() - tapState.time) <= TIME_LIMIT){
+        const target = tapState.btn.getAttribute("data-target");
+        if(target && SCREENS[target]){ renderScreen(target); }
       }
       tapState = null;
-    });
+    }, true);
 
-    // Initial render
+    document.addEventListener("click", function(e){
+      if(e.target.closest(".tap-btn")){ e.preventDefault(); e.stopPropagation(); }
+    }, true);
+
+    loadChecks();
     renderMenu();
-    renderContent();
+    renderScreen("home");
   </script>
 </body>
 </html>
