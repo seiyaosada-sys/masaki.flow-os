@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>まさき整形 受付対応OS v0.3.7</title>
+  <title>まさき整形 受付対応OS v0.4.7</title>
   <style>
     :root{
       --bg:#0f172a;
@@ -250,6 +250,68 @@
       margin-bottom:18px;
     }
 
+    .flow-grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:12px;
+      margin-bottom:18px;
+    }
+
+    .flow-card{
+      background:#0f172a;
+      border:1px solid var(--border);
+      border-radius:14px;
+      padding:14px;
+      min-height:118px;
+      position:relative;
+    }
+
+    .flow-card::after{
+      content:"→";
+      position:absolute;
+      right:12px;
+      bottom:8px;
+      color:var(--muted);
+      font-size:18px;
+      font-weight:900;
+    }
+
+    .flow-card:last-child::after{
+      content:"完";
+      font-size:13px;
+      bottom:11px;
+    }
+
+    .flow-num{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      width:28px;
+      height:28px;
+      border-radius:999px;
+      background:rgba(56,189,248,.14);
+      border:1px solid rgba(56,189,248,.35);
+      color:#bfdbfe;
+      font-size:13px;
+      font-weight:900;
+      margin-bottom:8px;
+    }
+
+    .flow-title{
+      font-size:16px;
+      font-weight:900;
+      line-height:1.35;
+      margin-bottom:7px;
+    }
+
+    .flow-body{
+      color:var(--muted);
+      font-size:14px;
+      line-height:1.55;
+      white-space:pre-line;
+      padding-right:18px;
+    }
+
     .home-note{
       font-size:15px;
       color:var(--muted);
@@ -262,12 +324,13 @@
       .detail{ width:56%; }
       .script{ font-size:20px; }
       .detail h2{ font-size:24px; }
+      .flow-grid{ grid-template-columns:1fr; }
     }
   </style>
 </head>
 <body>
   <header>
-    <div>まさき整形 受付対応OS v0.3.7</div>
+    <div>まさき整形 受付対応OS v0.4.7</div>
     <div class="header-right">
       <div class="path-chip" id="pathChip">HOME</div>
     </div>
@@ -290,6 +353,7 @@
       { id:"results", label:"骨塩結果 / 採血結果", style:"primary" },
       { id:"mri", label:"MRI予約", style:"primary" },
       { id:"wait", label:"待ち状況 / 外出案内", style:"warn" },
+      { id:"confirm", label:"要確認 / 院長確認", style:"danger" },
       { id:"docs", label:"書類", style:"danger" },
       { id:"rousai", label:"労災", style:"danger" },
       { id:"accident", label:"自賠 / 第三者 / 学校", style:"danger" },
@@ -308,7 +372,28 @@
         title: "選択してください",
         script: "左のボタンを押すと、案内セリフが表示されます。",
         hint: "Androidタブレット用：スクロール中の誤タップを抑える設定にしてあります。",
-        detail: "現場運用基準：v0.3.7\n交通事故返金フローおよび学校内怪我のフローを追加しました。"
+        detail: "現場運用基準：v0.4.7\n要確認・院長確認が必要なケースの入口を追加しました。"
+      },
+
+      confirm: {
+        badge: "要確認",
+        badgeClass: "red",
+        title: "要確認 / 院長確認",
+        script: "受付だけで判断しない項目です。\n迷ったら、この画面から該当フローを開いて院長・担当者へ確認します。",
+        hint: "患者さんへ断定して案内する前に、カルテ・担当者・院長確認を優先します。",
+        buttons: [
+          { id:"docs_cert_check", label:"診断書：自己判断中断 / 未来日付", style:"danger" },
+          { id:"docs_harikyu", label:"あん摩・はりきゅう同意書", style:"danger" },
+          { id:"docs_jibai_disability", label:"自賠責 後遺障害診断書", style:"danger" },
+          { id:"rousai_forms", label:"労災：医師証明系の用紙", style:"danger" },
+          { id:"docs_sports", label:"スポーツ保険：治療用装具明細書", style:"warn" },
+          { id:"seiho_no", label:"生活保護：電話確認なし", style:"danger" },
+          { id:"acc_third", label:"第三者行為", style:"danger" },
+          { id:"mri_readers", label:"MRI：読影Drリスト外", style:"warn" },
+          { id:"crutch_return_novisit", label:"松葉杖：診察なし返却", style:"warn" }
+        ],
+        detail: "要確認の考え方：\n・当院で受診歴がない部位や病名の証明は不可\n・自己判断で治療中断している診断書は、転帰や経過が不明なため院長診察が必要\n・未来日付の証明は不可\n・あん摩・はりきゅう同意書は、当院で一定期間の治療歴があり院長診察が必要\n・後遺障害診断書は院長診察と療法士計測が必要\n・労災の休業給付、障害補償、本人申請用紙は医師証明が必要\n・生活保護は電話確認が取れない場合、医療扶助として受付できない\n・第三者行為は保険者への確認が必要\n・MRIの読影Drリストにない部位は八重洲へ電話確認\n・松葉杖を診察なしで返却する場合は、自己判断返却の説明が必要",
+        checks: ["患者さんへ断定する前にカルテを確認", "院長確認か担当者確認かを判断", "不可条件に当てはまらないか確認", "必要なら診察へ案内", "確認した相手・内容を記録または引き継ぎ"]
       },
 
       /* 初診・再診・結果・MRI・待ち状況などは既存通り (省略せず保持) */
@@ -328,23 +413,73 @@
       results: { badge: "通常", badgeClass: "blue", title: "結果を聞きたい", script: "どちらの結果ですか？", buttons: [{ id:"bone_result_home", label:"骨塩結果", style:"primary" }, { id:"blood_result_home", label:"採血結果", style:"primary" }] },
       bone_result_home: { badge: "通常", badgeClass: "blue", title: "骨塩結果", script: "骨塩の結果は、診察で医師からご説明します。\n本日は診察へご案内します。", checks: ["結果説明は診察で行う旨を説明", "診察へ案内"], backTo: "results" },
       blood_result_home: { badge: "通常", badgeClass: "blue", title: "採血結果", script: "採血の結果は、診察で医師からご説明します。\n本日は診察へご案内します。", checks: ["結果説明は診察で行う旨を説明", "診察へ案内"], backTo: "results" },
-      mri: { badge: "通常", badgeClass: "blue", title: "MRI予約", script: "MRIの予約ですね。\n予約は別のiPadで取得します。", hint: "細かい詳細は「まさき」へ確認。", detail: "手順：\n1) 希望の日付を伺う\n2) 別iPadで予約日時を入力\n3) 患者情報＋予約日時を両面印刷して、お会計時に渡す\n4) iPad と 電カルへ入力\n5) 診療情報提供書を印刷 → スキャン", checks: ["希望日を確認", "別iPadで予約入力", "患者情報＋予約日時を両面印刷（会計時に渡す）", "iPadと電カルへ入力", "診療情報提供書を印刷 → スキャン", "細かい詳細は「まさき」へ確認"] },
+      mri: {
+        badge: "通常",
+        badgeClass: "blue",
+        title: "MRI予約",
+        script: "MRIの予約ですね。\n八重洲アプリのiPadで予約を取り、予約票・紹介状・電カル入力まで確認します。",
+        hint: "VPNをオン、Wi-Fi確認。検査部位・日時・検査内容は患者さんと必ず再確認。",
+        buttons: [{ id:"mri_readers", label:"読影Dr対応表", style:"primary" }],
+        flow: [
+          { title:"iPad準備", body:"設定でVPNをオン\nWi-Fi接続を確認\n八重洲アプリを開く" },
+          { title:"ログイン", body:"ID自動入力でログイン\n「新規の検査予約」を選択" },
+          { title:"部位・検査選択", body:"部位を選択\nMRI / CT を選ぶ\n鎖骨・胸椎は1.5T\nその他は3T" },
+          { title:"予約日選択", body:"濃いピンクが予約優先\n検査日時・検査内容・部位を患者さんと確認\n待ち時間に予約票見本を渡す" },
+          { title:"患者情報入力", body:"特記事項まで入力\n当院の医師名を入れる\n専門Dr名は別紙参照" },
+          { title:"仮登録", body:"特記事項まで入れたら\n「仮登録」ボタン" },
+          { title:"紹介状印刷", body:"予約検査一覧から\n該当患者の「紹介状印刷」" },
+          { title:"予約票・地図印刷", body:"「予約票・地図」\n「検査注意事項」を選択\n両面・モノクロ印刷" },
+          { title:"電カル入力", body:"印刷中にカルテ入力\n別紙内容を参照" },
+          { title:"予約票確認", body:"予約票が出たら\n名前・生年月日・予約日時・検査内容・部位を再確認" },
+          { title:"検査予約チェック・患者へ渡す準備", body:"【患者さんへ渡せる状態にする】\n電カルの指示項目\n「検査予約」にチェック\n予約票はファイルへ入れてレセBOXへ\n会計時に受付から患者さんへ渡す" },
+          { title:"依頼内容記入", body:"iPadの予約検査一覧から\n該当患者の依頼内容を記入\n病名・精査目的はカルテ参照\n精査目的欄は「精査お願いします」" },
+          { title:"提供書印刷・スキャン", body:"紹介状印刷\n「診療情報提供書」のみ\n片面・モノクロ印刷\n印刷後は受付のスキャンBOXへ" }
+        ],
+        detail: "注意点：\n・検査日が決定したら、患者さんと日付・検査内容・部位を必ず確認\n・特記事項には各部位専門Dr.の名前を記入。文言例：「○○Drで読影お願いします。」\n・鎖骨・胸椎は1.5T、その他部位は3T\n・予約票はファイルへ入れてレセBOXへ。会計時に受付から患者さんへ渡せる状態にする\n・診療情報提供書は印刷できたら受付のスキャンBOXへ\n・細かい詳細や専門Dr名は「読影Dr対応表」または「まさき」へ確認",
+        checks: ["VPNオン・Wi-Fi接続を確認", "八重洲アプリで新規予約を選択", "部位とMRI/CT、1.5T/3Tを確認", "予約日時・検査内容・部位を患者さんと確認", "特記事項に医師名と読影依頼を入力", "予約票・地図・検査注意事項を両面モノクロ印刷", "電カルの検査予約にチェック", "予約票をファイルへ入れてレセBOXへ（会計時に患者さんへ渡せる状態）", "診療情報提供書のみ片面モノクロ印刷", "印刷物をスキャンBOXへ入れる"]
+      },
+      mri_readers: {
+        badge: "MRI",
+        badgeClass: "blue",
+        title: "MRI読影Dr対応表",
+        script: "検査部位ごとに、特記事項へ入れる読影Dr名を確認します。",
+        hint: "リストにない部位は八重洲へ電話確認。自賠の場合は部位に関係なく常勤の許斐Dr.へ依頼。",
+        detail: "撮影条件：\n・鎖骨、胸椎は1.5T\n・その他の部位は3T\n\n読影Dr：\n・整形全般 → 許斐（コノミ）Dr.\n・頭部（脳、脳動脈、下垂体、内耳、副鼻腔、顎関節） → 許斐（コノミ）Dr.\n・脊椎（頸椎、胸椎、腰椎、仙椎）、脊髄 → 許斐（コノミ）Dr.\n・肩関節 → 許斐（コノミ）Dr.\n・股関節 → 許斐（コノミ）Dr.\n・上肢、下肢（上腕、肘、前腕、大腿、下腿） → 許斐（コノミ）Dr.\n・膝関節 → 新津（ニイツ）Dr.\n・足関節 → 小橋（コハシ）由紋子Dr.\n・手、RA（手関節、手背など手全般） → 神島（カミシマ）保Dr.\n\n特記事項の文言例：\n「○○Drで読影お願いします。」",
+        checks: ["部位を確認", "鎖骨・胸椎は1.5T、その他は3Tを確認", "該当する読影Dr名を確認", "リストにない部位は八重洲へ電話確認", "自賠の場合は部位に関係なく許斐Dr.へ依頼"],
+        backTo: "mri"
+      },
       wait: { badge: "待ち", badgeClass: "amber", title: "待ち状況 / 外出案内", script: "現在の待ち人数はどれくらいですか？", buttons: [{ id:"wait_0_5", label:"0〜5人（空いてる）", style:"ok" }, { id:"wait_6_10", label:"6〜10人（少しかかる）", style:"warn" }, { id:"wait_11p", label:"11人以上（混雑）", style:"danger" }] },
       wait_0_5: { badge: "待ち", badgeClass: "amber", title: "待ち状況（0〜5人）", script: "現在は比較的空いております。\n診察内容により順番が前後する場合があります。", backTo: "wait" },
       wait_6_10: { badge: "待ち", badgeClass: "amber", title: "待ち状況（6〜10人）", script: "現在やや混み合っております。\n診察内容により順番が前後する場合があります。", backTo: "wait" },
       wait_11p: { badge: "待ち", badgeClass: "amber", title: "待ち状況（11人以上）", script: "現在混雑しております。\n受付を済ませていただければ外出も可能です。", detail: "外出時：\nお戻りの際にピンクの番号札を受付にお渡しください。\n順番の更新は、白の番号札裏面のQRコードから確認できます。", backTo: "wait" },
 
       /* 書類・労災 */
-      docs: { badge: "書類", badgeClass: "red", title: "書類", script: "どの書類ですか？", buttons: [{ id:"docs_rousai", label:"労災（書類）", style:"danger" }, { id:"docs_jibai", label:"自賠責（書類）", style:"danger" }, { id:"docs_shindan", label:"当院発行 診断書A4", style:"primary" }, { id:"docs_common", label:"任意保険 / 傷病手当 / 生命保険 / その他", style:"warn" }, { id:"docs_receive", label:"受け取り（本人確認）", style:"primary" }] },
+      docs: { badge: "書類", badgeClass: "red", title: "書類", script: "どの書類ですか？", buttons: [{ id:"docs_fee_table", label:"文書料金表", style:"warn" }, { id:"docs_cert_check", label:"診断書：まず確認", style:"danger" }, { id:"docs_shindan", label:"当院書式 診断書", style:"primary" }, { id:"docs_insurance", label:"任意保険 / 傷病手当", style:"warn" }, { id:"docs_sports", label:"スポーツ保険 / 治療用装具", style:"warn" }, { id:"docs_harikyu", label:"あん摩・はりきゅう同意書", style:"warn" }, { id:"docs_jibai_disability", label:"自賠責 後遺障害診断書", style:"danger" }, { id:"docs_rousai", label:"労災（書類）", style:"danger" }, { id:"docs_jibai", label:"自賠責（書類）", style:"danger" }, { id:"docs_common", label:"生命保険 / その他", style:"warn" }, { id:"docs_receive", label:"受け取り（本人確認）", style:"primary" }] },
+      docs_fee_table: {
+        badge: "料金",
+        badgeClass: "amber",
+        title: "文書料金表",
+        script: "文書料の目安です。\n税込改定メモがあるものは、右側の新料金を優先して確認します。",
+        hint: "書類内容により院長確認や2〜3週間が必要です。迷うものは担当者へ確認。",
+        detail: "基本：\n・診察券再発行：80円\n・診断書（当院書式）：4,400円\n・上記以降の訂正：2,200円\n・診断書（当院書式以外 / A4）：5,500円\n・身体障害者診断書・意見書：5,500円\n\n開示・コピー・画像：\n・診療録の開示手数料：5,500円\n・診療報酬明細書（レセプト）：5,500円\n・診療録コピー（白黒）：1枚20円\n・画像CD-R（診情書と共に患者渡し）：1枚1,100円\n・画像CD-R（保険会社提出等 / 窓口渡し）：1枚1,650円\n・画像CD-R（保険会社提出等 / 郵送）：1枚2,200円\n\n学校・証明書：\n・学生生活管理指導表：2,000円\n・小・中学校証明書（簡単なもの）：1,000円\n・医療等の状況（災害共済給付制度）：0円\n・証明書（通院・通学許可、投薬・治療装具の証明など）：3,300円\n・医療・健康報告書：3,000円\n・就労可否見込等の意見書：3,300円\n・領収証明書発行手数料：500円\n\n労災・保険点数：\n・休業補償給付支給請求書（様式8号 / 労災、様式16号の6 / 通災）：2,000円\n・障害補償給付支給請求書（様式10号 / 労災、様式16号の7 / 通災）：4,000円\n・自賠責明細書：4,400円\n・傷病手当金給付診断書・意見書：100点\n・療養費同意書交付料（按摩・マッサージ・針・灸）：100点\n・診療情報提供書：250点\n\nその他：\n・紛失等による4か月以内の再交付：4,400円\n・労災 様式第7号(1)：自費 2,000円\n・労災 様式第7号(2)：自費 2,000円\n・労災 様式第8号（労災適用外の場合）：自費 5,500円\n・転院証明書：3,000円",
+        checks: ["税込改定メモがある料金は新料金を優先", "当院書式か当院書式外か確認", "保険点数か自費円建てか確認", "郵送・窓口渡しで料金が変わるものを確認", "迷うものは担当者へ確認"],
+        backTo: "docs"
+      },
       docs_rousai: { badge: "書類", badgeClass: "red", title: "書類：労災", script: "労災の書類ですね。\nまず「提出先」「書式の有無」「期限」の3点を確認します。", hint: "作成には2〜3週間ほど。完成確認のお電話後に来院ください。", checks: ["① 提出先（会社 / 労基 / 保険者）を確認", "② 指定書式の有無（持参 / 当院記入欄）を確認", "③ 期限（いつまでに必要か）を確認", "書類の種類を確認しお預かり（控え必要ならコピー）", "作成目安（2〜3週）を説明"], backTo: "docs" },
       docs_jibai: { badge: "書類", badgeClass: "red", title: "書類：自賠責", script: "自賠責の書類ですね。\nまず「提出先」「書式の有無」「期限」の3点を確認します。", hint: "作成には2〜3週間ほど。完成確認のお電話後に来院ください。", checks: ["① 提出先（保険会社 / 自賠責 / 弁護士等）を確認", "② 指定書式の有無（持参 / 当院記入欄）を確認", "③ 期限（いつまでに必要か）を確認", "保険会社名 / 担当者（分かる範囲）を確認", "お預かり（控え必要ならコピー）", "作成目安（2〜3週）を説明"], backTo: "docs" },
-      docs_shindan: { badge: "書類", badgeClass: "red", title: "当院発行 診断書A4", script: "当院発行の診断書（A4）ですね。\n料金は税込5,500円です。", hint: "受け取り後の修正は、手数料がかかる場合があります。", detail: "完成まで2〜3週間。\n院長記入は火曜・水曜・木曜のお昼休み。", checks: ["用途（提出先）を確認", "記載希望の内容があるか確認", "料金 5,500円 を説明", "受け取り前に内容確認する旨を説明", "受取後の修正は手数料の可能性を説明"], backTo: "docs" },
-      docs_common: { badge: "書類", badgeClass: "red", title: "書類：共通案内", script: "書類の料金は、内容や保険会社の指定により異なります。\n作成には2〜3週間ほどお時間をいただいております。", detail: "完成確認のお電話をしていただいてからご来院ください。\n医師は火曜・水曜・木曜のお昼休みに書類を作成しております。\nそのため即日発行はできません。", backTo: "docs" },
+      docs_cert_check: { badge: "書類", badgeClass: "red", title: "診断書：まず確認", script: "診断書・証明書ですね。\nまず、証明したい内容がカルテ上で確認できるかを確認します。", hint: "本人以外の保険会社との診断書やり取りは基本NG。本人に情報開示する場合は同意書が必要です。", detail: "確認すること：\n・どの部位、どの病名に対する証明がほしいか\n・治療を継続中か、終了しているか\n・いつからいつまでの証明がほしいか\n・当院で受診歴のない部位や病名ではないか\n・行っていない診療行為についての証明ではないか\n\n作成判断：\n・終診や転帰が明確 → 院長確認不要\n・治療継続中 → 途中記入でよいか確認。OKなら院長確認不要、NGなら終了後に持参してもらう\n・自己判断で治療中断 → 院長診察が必要（転帰・経過が不明のため）\n\nNG事項：\n・当院で受診歴のない部位や病名の証明\n・行っていない診療行為の証明\n・未来日付の証明\n・本人確認や同意なしでの保険会社対応", checks: ["カルテで対象部位・病名を確認", "初診日・最終来院日を確認", "治療継続中 / 終了を確認", "証明したい期間を確認", "未来日付の証明ではないか確認", "自己判断中断なら院長診察へ案内", "不明点は院長または担当者へ確認"], backTo: "docs" },
+      docs_shindan: { badge: "書類", badgeClass: "red", title: "当院書式 診断書", script: "当院書式の診断書ですね。\n当日作成できるものと、院長確認が必要なものがあります。", hint: "受け取り後の修正は、手数料がかかる場合があります。", detail: "当院書式の診断書：\n・当院書式の診断書：1枚 4,400円（当日 / 本人お渡し）\n・任意加入の保険会社宛の診断書：A4 1面 5,500円、2〜3週間後\n・長期・治療経過不明・最終来院日までの証明が必要な場合は院長確認\n・本人お渡し。返信用封筒を持参すれば郵送可", checks: ["用途（提出先）を確認", "記載希望の部位・病名・期間を確認", "当日作成可か院長確認か判断", "料金を説明", "本人お渡し / 返信用封筒持参なら郵送可を説明"], backTo: "docs" },
+      docs_insurance: { badge: "書類", badgeClass: "red", title: "任意保険 / 傷病手当", script: "保険会社や傷病手当の書類ですね。\n所定書式をお預かりして、作成可否と期間を確認します。", hint: "作成には2〜3週間ほど。完成確認のお電話後に来院ください。", detail: "任意加入の保険会社 診断書：\n・A4サイズ 1面 5,500円\n・書類預かり時に精算（自費カルテ）\n・P → 医学管理 → 文書料 → 一般 → 診断書（当院書式外）\n・対象部位は当院受診歴のあるもののみ\n・証明期間は通常、初診日〜治療終了日\n・治療途中の記入は希望日でOK\n・終診や転帰が明確なら院長確認不要\n・治療継続中は途中記入でよいか確認。OKなら院長確認不要、NGなら終了後に持参してもらう\n・自己判断で治療中断している場合は院長診察が必要\n・本人お渡し。返信用封筒持参で郵送可\n\n健康保険 傷病手当金支給申請書：\n・院長の診察が必要\n・保険で算定：傷病手当金意見書交付料 100点\n・P → 医学管理 → 文書料 → 一般\n・本人お渡し。返信用封筒持参で郵送可", checks: ["所定書式の有無を確認", "提出先を確認", "対象部位・病名が当院受診歴ありか確認", "証明期間を確認", "終診 / 治療継続中 / 自己判断中断を確認", "治療継続中なら途中記入でよいか確認", "自己判断中断なら院長診察へ案内", "任意保険診断書は料金 5,500円 と自費カルテ精算を確認", "傷病手当金は院長診察と100点算定を確認", "2〜3週間の目安を説明", "返信用封筒があれば郵送可と説明"], backTo: "docs" },
+      docs_sports: { badge: "書類", badgeClass: "red", title: "スポーツ保険 / 治療用装具", script: "スポーツ保険や治療用装具の書類ですね。\n医療等の状況か、治療用装具明細書かを確認します。", detail: "スポーツ振興センター 医療等の状況：\n・治療終了後に作成\n・預かり中は「スポーツ保険 受取」BOXで保管\n・作成済みは「スポーツ保険 作成済」BOXへ\n・不要（院長不要）\n・2診療日後\n・無料\n・本人お渡し\n・4か月以内の紛失等による再発行は4,400円\n\nスポーツ振興センター 治療用装具明細書：\n・自費で購入されたサポーター代などに関わる用紙\n・院長記入が必要\n・2〜3週間後\n・作成料なし\n・預かり時は「医療等の状況」とセットで保管\n・ソフラウルファー等、当日費サポーターが処方された場合に記入して本人へ渡す\n\n労働基準監督署 / 様式第8号・16号の6（業務災害用休業補償給付支給請求書）：\n・基本は院長確認\n・2〜3週間後\n・災害患者のみで労災登録がない場合は担当者へ確認", checks: ["医療等の状況 / 治療用装具明細書のどちらか確認", "医療等の状況は治療終了後に作成と説明", "預かり中は受取BOX、作成済は作成済BOXへ", "治療用装具明細書は院長記入が必要と確認", "両方預かったらセットで保管", "お渡し時期を説明"], backTo: "docs" },
+      docs_harikyu: { badge: "書類", badgeClass: "red", title: "あん摩・はりきゅう同意書", script: "あん摩・はりきゅうの同意書ですね。\n当院で治療歴があり、院長診察が必要です。", detail: "作成条件：\n・当院に約半年程度リハビリや物療の治療を行ったが、改善されない場合のみ記入可能\n・初診、または当院で治療歴がない場合は不可\n・当院にて院長の診察が必要\n\n料金・算定：\n・保険で助成される\n・療養費同意書交付料を算定（100点）\n・P → 医学管理 → 文書料 → 一般\n\n注意：\n・対象となる傷病・部位が当院カルテで確認できること\n・保険会社や施術所の用紙を持参しているか確認", checks: ["当院で約半年程度の治療歴があるか確認", "初診または治療歴なしなら不可と説明", "院長診察へ案内", "対象部位・病名をカルテで確認", "療養費同意書交付料 100点を確認"], backTo: "docs" },
+      docs_jibai_disability: { badge: "書類", badgeClass: "red", title: "自賠責 後遺障害診断書", script: "自賠責の後遺障害診断書ですね。\n作成には院長診察と、必要に応じて療法士による計測が必要です。", detail: "診察・料金：\n・院長の診察が必要\n・作成料：A4サイズ 1面 5,500円\n・診察料：自賠責継続中 → 自賠カルテ（0円）\n・自賠責終了後 → 10割負担\n・自賠を使いたい場合は保険会社に確認が必要\n\n作成までの流れ：\n1) 院長診察\n2) 療法士による計測（計測予約）\n3) 院長記入（2〜3週間）\n\n精算後：\n・用紙を両面コピーし、コピーをリハ室へ\n・原本は受付の「作成待ちBOX」に「確認中」クリップを付け、計測が終わるまで保管\n\n計測後：\n・コピーと原本を「院長記入」ファイルへ入れる", checks: ["院長診察が必要と説明", "作成料 5,500円を説明", "自賠責継続中か終了後か確認", "自賠使用希望なら保険会社確認を案内", "療法士の計測予約を確認", "精算後の原本・コピー保管先を確認", "計測後に院長記入ファイルへ入れる"], backTo: "docs" },
+      docs_common: { badge: "書類", badgeClass: "red", title: "書類：共通案内", script: "書類の料金は、内容や保険会社の指定により異なります。\n作成には2〜3週間ほどお時間をいただくことがあります。", detail: "完成確認のお電話をしていただいてからご来院ください。\n医師は火曜・水曜・木曜のお昼休みに書類を作成しております。\nそのため即日発行できない書類があります。\n\n本人お渡しが原則です。\n返信用封筒を持参された場合は郵送対応できる書類があります。", backTo: "docs" },
       docs_receive: { badge: "書類", badgeClass: "red", title: "書類：受け取り", script: "書類のお受け取りですね。\n本人確認をさせていただきます。", detail: "個人情報を含むため、本人確認が取れない場合はお渡しできません。", buttons: [{ id:"docs_proxy", label:"代理受取（委任状）", style:"warn" }], checks: ["診察券を確認", "生年月日・住所の口頭確認", "必要なら保険証 / マイナ確認"], backTo: "docs" },
       docs_proxy: { badge: "書類", badgeClass: "red", title: "書類：代理受取", script: "代理の方が受け取られる場合は、委任状と身分証の確認が必要です。\n本人確認が取れない場合はお渡しできません。", checks: ["委任状を確認", "代理人の身分証を確認"], backTo: "docs_receive" },
-      rousai: { badge: "労災", badgeClass: "red", title: "労災", script: "今回のケガはどちらですか？", buttons: [{ id:"rousai_work", label:"業務中", style:"danger" }, { id:"rousai_commute", label:"通勤中", style:"danger" }, { id:"rousai_unknown", label:"まだ分からない", style:"warn" }] },
+      rousai: { badge: "労災", badgeClass: "red", title: "労災", script: "今回のケガはどちらですか？", buttons: [{ id:"rousai_work", label:"業務中", style:"danger" }, { id:"rousai_commute", label:"通勤中", style:"danger" }, { id:"rousai_forms", label:"労災用紙の種類", style:"warn" }, { id:"rousai_unknown", label:"まだ分からない", style:"warn" }] },
       rousai_work: { badge: "労災", badgeClass: "red", title: "労災：業務中", script: "仕事中のケガは健康保険を使用できません。\n必要書類が揃うまでは、いったん10割でのお預かりになります。", detail: "当院が最初の受診 → 5号\n他院からの転院 → 6号\n認定後に返金。", checks: ["業務中のケガであることを確認", "健康保険は使えないと説明", "必要書類が揃うまで10割預かりと説明"], backTo: "rousai" },
       rousai_commute: { badge: "労災", badgeClass: "red", title: "労災：通勤中", script: "通勤中のケガは健康保険を使用できません。\n必要書類が揃うまでは、いったん10割でのお預かりになります。", detail: "当院が最初の受診 → 16号の3\n他院からの転院 → 16号の4\n認定後に返金。", checks: ["通勤中のケガであることを確認", "健康保険は使えないと説明", "必要書類が揃うまで10割預かりと説明"], backTo: "rousai" },
+      rousai_forms: { badge: "労災", badgeClass: "red", title: "労災用紙の種類", script: "労災の用紙ですね。\n業務災害か通勤災害か、当院登録用か休業給付用かを確認します。", detail: "当院で労災登録ができる用紙：\n・第5号：業務災害用\n・第6号：通勤災害用\n・第16号の3：業務災害、当院へ転医用\n・第16号の4：通勤災害、当院へ転医用\n\n休業の給付申請ができる用紙：\n・第8号：業務災害用\n・第16号の6：通勤災害用\n※医師による証明が必要\n\n患者さん自身で労災申請する用紙（当院での登録なし）：\n・第7号(1)：業務災害用、病院用\n・第7号(2)：業務災害用、薬局用\n・第16号の5(1)：通勤災害用、病院用\n・第16号の5(2)：通勤災害用、薬局用\n※自費サポーター・装具代を含む場合あり\n※医師による証明が必要", checks: ["業務災害か通勤災害か確認", "当院登録用か休業給付用か患者本人申請用か確認", "転医用なら前医から当院への転医か確認", "休業給付・本人申請用は医師証明が必要と確認", "用紙番号を確認して担当者へ引き継ぐ"], backTo: "rousai" },
       rousai_unknown: { badge: "労災", badgeClass: "red", title: "労災：まだ分からない", script: "お仕事中・通勤中のケガの場合は健康保険は使えません。\n勤務先にご確認をお願いします。", backTo: "rousai" },
 
       /* 自賠責・第三者・学校内怪我 (資料反映箇所) */
@@ -410,16 +545,73 @@
       seiho_have: { badge: "生保", badgeClass: "green", title: "生活保護：医療券あり", script: "医療券を確認します。", checks: ["有効期限確認", "医療機関名（まさき整形外科）確認", "傷病名確認", "負担欄確認"], backTo: "seiho" },
       seiho_no: { badge: "生保", badgeClass: "green", title: "生活保護：電話確認が取れない", script: "担当のケースワーカーへ、当院へ受診する旨をお伝えください。\n市から当院へ電話確認が取れれば、医療扶助で受診可能です。", detail: "電話確認が取れない場合は、医療扶助としては受付できません。\nただし、10割（自費扱い）であれば本日は受診できます。\n10割の場合は当日のお支払いが必要です。", checks: ["ケースワーカーへ連絡依頼を案内", "医療扶助は電話確認が必要と説明", "確認不可なら10割（自費）で受診可能と説明", "10割の場合は当日支払いが必要と説明"], backTo: "seiho" },
       seiho_unknown: { badge: "生保", badgeClass: "green", title: "生活保護：不明", script: "担当のケースワーカーへ、当院で受診可能かご確認ください。\n電話確認が取れれば医療扶助で受診可能です。", detail: "電話確認が取れない場合は医療扶助としては受付できませんが、10割（自費扱い）であれば本日は受診できます。", backTo: "seiho" },
-      crutch: { badge: "松葉", badgeClass: "blue", title: "松葉杖", script: "松葉杖のご用件はどちらですか？", buttons: [{ id:"crutch_lend", label:"貸出（診察必須）", style:"primary" }, { id:"crutch_return", label:"返却", style:"primary" }] },
-      crutch_lend: { badge: "松葉", badgeClass: "blue", title: "松葉杖：貸出", script: "松葉杖の貸出は診察が必要になります。\n借用書（本紙＋控え）と預かり金5,000円をお預かりします。", checks: ["診察へ案内（貸出判断は医師）", "借用書 本紙＋控え（2枚）", "5,000円 預かり", "控えを患者へ渡した", "カルテ記録"], backTo: "crutch" },
-      crutch_return: { badge: "松葉", badgeClass: "blue", title: "松葉杖：返却", script: "松葉杖の返却ですね。\n本日は診察のご予定はありますか？", buttons: [{ id:"crutch_return_visit", label:"ある（原則）", style:"ok" }, { id:"crutch_return_novisit", label:"ない（入院・もう使わない等）", style:"warn" }], backTo: "crutch" },
-      crutch_return_visit: { badge: "松葉", badgeClass: "blue", title: "松葉杖：返却（診察あり）", script: "原則、診察後に返却処理を行います。\n借用書をご提示ください。", checks: ["借用書確認", "使用日数を確認", "当日会計と合算し使用料を精算"], backTo: "crutch_return" },
-      crutch_return_novisit: { badge: "松葉", badgeClass: "blue", title: "松葉杖：返却（診察なし）", script: "医師の診察なしで松葉杖を終了される場合は、自己判断での返却となります。\nその後の転倒や症状悪化について、当院では責任を負いかねます。", detail: "必要であれば、診察後に終了することも可能です。", checks: ["自己判断での返却の説明済", "借用書の返却欄サイン確認"], backTo: "crutch_return" },
+      crutch: { badge: "松葉", badgeClass: "blue", title: "松葉杖", script: "松葉杖のご用件はどちらですか？", buttons: [{ id:"crutch_lend", label:"貸出（診察必須）", style:"primary" }, { id:"crutch_contract", label:"借用書ガイド", style:"warn" }, { id:"crutch_return", label:"返却", style:"primary" }] },
+      crutch_lend: { badge: "松葉", badgeClass: "blue", title: "松葉杖：貸出", script: "松葉杖の貸出は診察が必要になります。\n借用書（原本＋コピー）と預かり金5,000円をお預かりします。", buttons: [{ id:"crutch_contract", label:"借用書ガイドを見る", style:"warn" }], checks: ["診察へ案内（貸出判断は医師）", "借用書 原本＋コピーを準備", "5,000円 預かり", "患者さんへコピーを渡した", "原本を院内ファイルで保管", "カルテ記録"], backTo: "crutch" },
+      crutch_contract: {
+        badge: "松葉",
+        badgeClass: "blue",
+        title: "松葉杖：借用書ガイド",
+        script: "松葉杖の借用書は、貸出時と返却時で記入場所が違います。\n原本・コピー・患者さん控えを分けて処理します。",
+        hint: "預かり金は5,000円。使用料は1日50円で、返却時に差額を返金します。",
+        flow: [
+          { title:"書類を準備", body:"松葉杖保証金預り証兼借用書\n原本とコピーを準備\n原本・コピーそれぞれ記入・押印" },
+          { title:"受付で記入", body:"預り日を記入\n預り金額 5,000円\n一対 / 片方を確認" },
+          { title:"注意事項を説明", body:"紛失・破損時は返金不可\n使用料は1日50円\n事故等の責任は負えない旨を説明" },
+          { title:"患者さん記入", body:"注意事項チェックを忘れずに\n借用年月日\n住所・氏名・IDを記入" },
+          { title:"説明担当者", body:"説明担当者名を記入または押印\nコピー後、原本側の担当者名の後ろへ赤でチェック" },
+          { title:"リハ室記入", body:"リハ室で 1 / 2 / 3 を記入\nネジ有・ネジなしも記入\nコピーして受付へ戻す" },
+          { title:"控えと保管", body:"コピーは患者さんへ渡す\n原本は院内ファイルで保管\n最終受診日から1か月受診がなければ電話確認" },
+          { title:"返却時の記入", body:"返却時は原本のみ A / B / C を記入\nA：本証持参 有・無、状況、患者署名\nB：返却日\nC：担当者" },
+          { title:"返却完了処理", body:"本証コピーがなくても差額返金可\n患者さん持参のコピーは破棄\n完了した原本は点線位置をカット" }
+        ],
+        detail: "貸出時：\n・原本とコピー、それぞれに必要事項を記入・押印\n・患者さんにはコピーを渡す\n・原本は院内ファイルで保管\n・リハ室で松葉杖の状態、ネジ有無などを記入\n\n返却時：\n・受付記入 A / B / C は原本のみ\n・本証コピーを持参できない場合は、原本に患者さんの署名が必要\n・本証コピーがなくても差額返金は可能\n・患者さんが持参したコピーは破棄\n・返却手続き完了後、原本は点線位置をカットしておく\n\n確認：\n・紛失または破損時は保証金を返金できない\n・使用料は1日あたり50円\n・返却時に使用日数を確認して差額精算",
+        checks: ["原本とコピーを準備", "預り日・5,000円・一対/片方を記入", "注意事項を説明", "患者さんのチェック・住所・氏名・IDを確認", "説明担当者名または押印を確認", "リハ室記入とネジ有無を確認", "コピーを患者さんへ渡し、原本をファイル保管", "返却時は原本のみA/B/Cを記入", "本証コピーなしなら原本へ患者署名", "返却完了後に原本の点線位置をカット"],
+        backTo: "crutch"
+      },
+      crutch_return: { badge: "松葉", badgeClass: "blue", title: "松葉杖：返却", script: "松葉杖の返却ですね。\n本日は診察のご予定はありますか？", buttons: [{ id:"crutch_return_visit", label:"ある（原則）", style:"ok" }, { id:"crutch_return_novisit", label:"ない（入院・もう使わない等）", style:"warn" }, { id:"crutch_contract", label:"借用書ガイド", style:"warn" }], backTo: "crutch" },
+      crutch_return_visit: { badge: "松葉", badgeClass: "blue", title: "松葉杖：返却（診察あり）", script: "原則、診察後に返却処理を行います。\n借用書をご提示ください。", detail: "返却時は原本のみ A / B / C を記入します。\nA：本証持参 有・無、状況、患者署名\nB：返却日\nC：担当者\n\n本証コピーがなくても差額返金は可能です。その場合は原本へ患者さんの署名が必要です。", checks: ["借用書確認", "使用日数を確認", "当日会計と合算し使用料を精算", "原本のみA/B/Cを記入", "患者さん持参のコピーは破棄", "完了した原本は点線位置をカット"], backTo: "crutch_return" },
+      crutch_return_novisit: { badge: "松葉", badgeClass: "blue", title: "松葉杖：返却（診察なし）", script: "医師の診察なしで松葉杖を終了される場合は、自己判断での返却となります。\nその後の転倒や症状悪化について、当院では責任を負いかねます。", detail: "必要であれば、診察後に終了することも可能です。\n\n返却時は原本のみ A / B / C を記入します。\n本証コピーがなくても差額返金は可能ですが、原本へ患者さんの署名が必要です。", checks: ["自己判断での返却の説明済", "借用書の返却欄サイン確認", "原本のみA/B/Cを記入", "本証コピーなしなら原本へ患者署名", "完了した原本は点線位置をカット"], backTo: "crutch_return" },
       xp: { badge: "通常", badgeClass: "blue", title: "XP（レントゲン）", script: "レントゲン（XP）は診察が必要になります。\n先に診察受付へご案内します。", checks: ["診察必須の説明を伝えた"] },
       money: { badge: "共通", badgeClass: "amber", title: "金額説明", script: "どの説明が必要ですか？", buttons: [{ id:"money_common", label:"金額について（点数制）", style:"warn" }, { id:"money_tenwari", label:"10割いくら？", style:"primary" }] },
       money_common: { badge: "共通", badgeClass: "amber", title: "金額について（共通）", script: "診療は「点数制」で計算しているため、内容によって金額が変わります。\n診察・処置後に確定します。", backTo: "money" },
       money_tenwari: { badge: "共通", badgeClass: "amber", title: "10割いくら？", script: "診療は点数制のため内容により変わります。\n目安として、診察のみであれば数千円〜1万円前後が多いですが、検査や処置で変動します。\n正確な金額は診察後に確定します。", backTo: "money" },
-      jihi: { badge: "自費", badgeClass: "amber", title: "自費 / 材料費", script: "材料費や自費物品は、保険とは別で自費になります。\n10割負担とは別の扱いです。", detail: "現状は一覧表で運用。\nよく使うものから順に今後組み込み予定。", checks: ["10割負担とは別の自費と説明", "一覧表で金額確認"] },
+      jihi: { badge: "自費", badgeClass: "amber", title: "自費 / 材料費", script: "材料費や自費物品は、保険とは別で自費になります。\n10割負担とは別の扱いです。", buttons: [{ id:"jihi_common_materials", label:"共通材料", style:"warn" }, { id:"jihi_exam_room", label:"診察室材料", style:"warn" }, { id:"jihi_rehab", label:"リハ室物品", style:"warn" }, { id:"jihi_braces", label:"保険適用外 装具", style:"danger" }], detail: "料金表から探す場合は分類を選択してください。\n保険適用外の装具・材料は、10割負担とは別の自費扱いです。", checks: ["10割負担とは別の自費と説明", "サイズ・左右・一対/片方を確認", "保険適用外か保険点数算定か確認"] },
+      jihi_common_materials: {
+        badge: "自費",
+        badgeClass: "amber",
+        title: "材料費：共通材料",
+        script: "共通で使う材料の料金目安です。\nサイズ違いがあるものは、実物と料金表を照合します。",
+        detail: "固定具・サポート：\n・アームスリング（子供用 / 一般用）：1,210円\n・キャスト（サンダル / シュー）：3,300円\n・ニースプリント（全サイズ）：7,480円\n・ニーブレース（全サイズ）：7,700円\n・三角巾 小：240円 / 大：470円\n・ソフトスプリント 5S〜S：750円 / M・L：1,050円\n\n小物：\n・シューカバー 青：30円 / ビニール：50円\n・ストッキネット 2号 / 10cm：30円\n・ストッキネット 3号 / 10cm：40円\n\nテープ：\n・紙バン：80円\n・サージカルテープ：280円\n・スキナゲート：340円\n・茶テープ 小：180円（診察室のみ）\n・茶テープ 大：300円\n\n包帯・固定：\n・エラスコット 2号：280円 / 3号：400円 / 4号：500円\n・自着包帯 小（2.5cm幅）：310円 / 大（5cm幅）：420円\n・シルキーテックス 3号：320円（リハ室のみ） / 5号：630円\n・ソフラクライム 3号：220円 / 4号：170円 / 6号：110円\n・ハイスパンE 2号：130円 / 3号：180円 / 4号：210円\n・ベネファクト 小：430円 / 大：860円\n・ワーデル 5号：1,030円\n・自着包帯巻き直し 小：80円 / 大：160円",
+        checks: ["サイズを確認", "診察室のみ・リハ室のみの指定を確認", "巻き直しは小/大を確認"],
+        backTo: "jihi"
+      },
+      jihi_exam_room: {
+        badge: "自費",
+        badgeClass: "amber",
+        title: "材料費：診察室材料",
+        script: "診察室で使う材料の料金目安です。",
+        detail: "ガーゼ・パッド：\n・ガーゼ 中折：70円\n・ガーゼ 小：90円 / 大：150円 / 特大：290円\n・カテリーパッド 小（5×8cm）：60円 / 大（8×12cm）：120円\n・メロリンガーゼ 小（5×5cm）：50円 / 大（10×10cm）：100円\n・ハイドロサイト薄型 小（5×6cm）：300円 / 大（10×10cm）：600円 / ジェントル銀（10×10cm）：1,300円\n\n処置材料：\n・シリンジ（針なし）：30円\n・ドレッシング材 / 10cm：50円\n・尿酸・ピロリン酸Ca結晶：500円\n・綿棒：80円\n・マルチフィックス / 1枚：90円\n・CD-R / 1枚：1,100円（その他は裏面参照）\n\nテーピング・ネット：\n・テーピングテープ 手指 / 足趾：500円\n・テーピングテープ 手首 / 足首：1,500円\n・プレスネット 1 / 2号 / 10cm：20円\n・プレスネット 3 / 4 / 5号 / 10cm：30円",
+        checks: ["小/大/特大を確認", "部位（手指・足趾・手首・足首）を確認", "CD-Rは用途により文書料金表も確認"],
+        backTo: "jihi"
+      },
+      jihi_rehab: {
+        badge: "自費",
+        badgeClass: "amber",
+        title: "材料費：リハ室物品",
+        script: "リハ室で扱う物品の料金目安です。\nサイズ・左右を確認します。",
+        detail: "足・手・肘：\n・アーチサポーター 縦：2,640円 / 横：2,420円\n・エクスエイドリスト（S〜L）：3,850円\n・エルボーバンド：1,300円\n・エラスティックラップ / 手首用：800円\n・サムラップ：2,530円\n・ニーラップ：2,600円\n・ニーラップライト：3,080円\n・テーピングテープ（足首用）：300円\n\nサポーター：\n・ガードラーOSバンド：2,480円\n・ソフラウルファ（M〜LX）：1,540円\n・D&Mサポーター 膝：1,000円 / 肘：800円",
+        checks: ["リハ室扱いか確認", "サイズ・左右を確認", "患者さんへ自費物品であることを説明"],
+        backTo: "jihi"
+      },
+      jihi_braces: {
+        badge: "自費",
+        badgeClass: "amber",
+        title: "保険適用外 装具",
+        script: "保険適用外の装具・固定具です。\nサイズ違いで金額が大きく変わるため、実物確認が必要です。",
+        detail: "装具：\n・カラーキーパーU（S〜M）：1,870円\n・クラビクルバンドII SS：2,420円 / S：3,025円 / M：4,235円 / L・LL：4,840円\n・ハイブリッド アンクル（S〜L）：7,480円\n・ハイブリッド ニー 伸縮タイプ（S〜LL）：10,450円\n・ハイブリッド リスト ショート（S〜L）：5,280円\n・ハイブリッド リスト ロング：6,490円\n・マックスベルト（SS〜5L）：1,870円\n\nリブバンド：\n・S：1,540円 / M：1,650円 / L：1,760円 / LL：1,870円 / 3L：1,980円\n・女性用 M：1,540円 / L：1,700円 / LL：1,760円\n\n関連点数メモ：\n・頸部固定帯加算：170点\n・鎖骨骨折固定術：500点\n・ギプス包帯 / シーネ固定：490 / 780 / 1,200点\n・腰部固定帯加算：170点\n・胸部固定帯加算：170点\n・肋骨骨折固定術（+テーピング）：500点",
+        checks: ["保険適用外であることを説明", "サイズを確認", "関連点数算定が必要か確認", "患者さんへ金額を説明"],
+        backTo: "jihi"
+      },
       sand: { badge: "待ち", badgeClass: "amber", title: "サンド / 逆サンド", script: "混雑時の案内はどれですか？", buttons: [{ id:"sand_def", label:"サンド / 逆サンド（定義）", style:"warn" }, { id:"sand_elec", label:"物療がある人を先に案内したい", style:"primary" }, { id:"sand_rehab", label:"運動リハ予約が優先", style:"primary" }] },
       sand_def: { badge: "待ち", badgeClass: "amber", title: "サンド / 逆サンド", script: "■ サンド：\n「物療（電気）」と「運動リハ」の間に診察を挟む\n\n■ 逆サンド：\n診察 → 物療（電気） → 運動リハ（または逆順）", detail: "混雑時は「物療がある人は先に物療へ案内」できる場合があります。\n※カルテの指示確認が前提", backTo: "sand" },
       sand_elec: { badge: "待ち", badgeClass: "amber", title: "混雑時：物療を先に案内", script: "診察が混んでいる場合、物療（電気）がある方は先に物療へご案内できることがあります。", detail: "※カルテで指示が出ている方のみ", checks: ["カルテで物療の指示を確認"], backTo: "sand" },
@@ -477,6 +669,19 @@
         html += '<div class="sub-grid">';
         s.buttons.forEach(function(b){
           html += '<button class="tap-btn ' + (b.style || "") + '" data-target="' + b.id + '">' + escapeHtml(b.label) + '</button>';
+        });
+        html += '</div>';
+      }
+
+      if(s.flow && s.flow.length){
+        html += '<div class="section-label">図解フロー</div>';
+        html += '<div class="flow-grid">';
+        s.flow.forEach(function(step, idx){
+          html += '<div class="flow-card">';
+          html +=   '<div class="flow-num">' + (idx + 1) + '</div>';
+          html +=   '<div class="flow-title">' + escapeHtml(step.title || "") + '</div>';
+          html +=   '<div class="flow-body">' + escapeHtml(step.body || "") + '</div>';
+          html += '</div>';
         });
         html += '</div>';
       }
